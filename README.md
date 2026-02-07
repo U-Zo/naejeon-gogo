@@ -1,9 +1,9 @@
-# Naejeon Gogo - LoL 내전 밸런스 매칭
+# 내전고고 - LoL 내전 밸런스 매칭
 
 > MMR과 포지션을 고려한 공정한 5v5 자동 팀 매칭 웹 앱
 
 <!-- 메인 스크린샷 또는 배너 이미지 -->
-<!-- ![WAR 스크린샷](./docs/screenshot.png) -->
+![내전고고 스크린샷](./github-images/match-making.png)
 
 ## 프로젝트 소개
 
@@ -37,20 +37,6 @@ LoL 내전을 진행할 때마다 수동으로 팀을 나누면 밸런스가 맞
 - 진행 중 매치에서 승리 팀 선택 또는 취소
 - MMR 자동 반영: 승리 +25 / 패배 -25 (최소 0)
 - 완료된 경기 목록을 최근순으로 조회 (팀 구성, 포지션, 승패)
-
-## 기술 스택
-
-| 분류 | 기술 |
-|------|------|
-| Framework | TanStack Start (React 19) |
-| Routing | TanStack Router |
-| Data Fetching | TanStack Query |
-| UI Components | Radix UI |
-| Styling | vanilla-extract |
-| Database | Turso (libSQL) / 로컬 JSON |
-| Language | TypeScript |
-| Build | Vite 7 |
-| Deploy | Render |
 
 ## 개발 환경 설정
 
