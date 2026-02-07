@@ -1,5 +1,6 @@
 import { josa } from 'es-hangul';
 import { useState } from 'react';
+import { useAuth } from '#/client/domains/auth';
 import { useMatches } from '#/client/domains/match';
 import type { Member, MemberInput } from '#/client/domains/member';
 import {
@@ -97,6 +98,7 @@ export function MembersPage() {
               key={member.id}
               member={member}
               stats={getStats(member.id)}
+
               onEdit={() => openEdit(member)}
               onDelete={() => setDeleteTarget(member)}
             />
@@ -121,6 +123,7 @@ export function MembersPage() {
                 key={member.id}
                 member={member}
                 stats={getStats(member.id)}
+  
                 onEdit={() => openEdit(member)}
                 onDelete={() => setDeleteTarget(member)}
               />
@@ -200,13 +203,14 @@ function MemberCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { isAdmin } = useAuth();
   const winRate =
     stats.wins + stats.losses > 0
       ? Math.round((stats.wins / (stats.wins + stats.losses)) * 100)
       : 0;
 
   return (
-    <div className={styles.memberCard} onClick={onEdit}>
+    <div className={styles.memberCard} onClick={isAdmin ? onEdit : undefined} style={isAdmin ? undefined : { cursor: 'default' }}>
       <div className={styles.memberInfo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className={styles.memberName}>{member.name}</span>
@@ -239,28 +243,30 @@ function MemberCard({
           ))}
         </div>
       </div>
-      <button
-        className={common.buttonDanger}
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete();
-        }}
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      {isAdmin && (
+        <button
+          className={common.buttonDanger}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
         >
-          <path d="M3 6h18" />
-          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-        </svg>
-      </button>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 6h18" />
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
@@ -306,10 +312,10 @@ function MemberForm({
   };
 
   return (
-    <div className={styles.formOverlay} onClick={onClose}>
-      <div className={styles.formSheet} onClick={(e) => e.stopPropagation()}>
+    <div className={common.formOverlay} onClick={onClose}>
+      <div className={common.formSheet} onClick={(e) => e.stopPropagation()}>
         <div className={common.dialogHeader}>
-          <h3 className={styles.formTitle}>{mode === 'create' ? '멤버 등록' : '멤버 수정'}</h3>
+          <h3 className={common.formTitle}>{mode === 'create' ? '멤버 등록' : '멤버 수정'}</h3>
           <button className={common.closeButton} onClick={onClose}>
             <svg
               width="20"
@@ -394,7 +400,7 @@ function MemberForm({
 
         {error && <p className={common.errorText}>{error}</p>}
 
-        <div className={styles.formActions}>
+        <div className={common.formActions}>
           <button className={common.buttonSecondary} style={{ flex: 1 }} onClick={onClose}>
             취소
           </button>
@@ -417,8 +423,8 @@ function DeleteConfirm({
   onCancel: () => void;
 }) {
   return (
-    <div className={styles.formOverlay} onClick={onCancel}>
-      <div className={styles.formSheet} onClick={(e) => e.stopPropagation()}>
+    <div className={common.formOverlay} onClick={onCancel}>
+      <div className={common.formSheet} onClick={(e) => e.stopPropagation()}>
         <div className={styles.deleteConfirmContent}>
           <p className={styles.deleteConfirmText}>
             <strong>{member.name}</strong>

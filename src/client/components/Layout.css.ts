@@ -20,6 +20,16 @@ export const header = style({
   backgroundColor: vars.color.bgSecondary,
   textAlign: 'center',
   zIndex: 100,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const headerActions = style({
+  position: 'absolute',
+  right: vars.space.lg,
+  top: '50%',
+  transform: 'translateY(-50%)',
 });
 
 export const title = style({

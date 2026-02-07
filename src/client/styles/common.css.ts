@@ -145,6 +145,39 @@ export const searchInput = style([
   },
 ]);
 
+export const formOverlay = style({
+  position: 'fixed',
+  inset: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 200,
+  padding: vars.space.lg,
+});
+
+export const formSheet = style({
+  width: '100%',
+  maxWidth: '400px',
+  maxHeight: '85vh',
+  overflowY: 'auto',
+  backgroundColor: vars.color.bgSecondary,
+  borderRadius: vars.radius.lg,
+  padding: vars.space.xl,
+});
+
+export const formTitle = style({
+  fontSize: vars.fontSize.lg,
+  fontWeight: 700,
+  color: vars.color.goldLight,
+});
+
+export const formActions = style({
+  display: 'flex',
+  gap: vars.space.sm,
+  marginTop: vars.space.xl,
+});
+
 export const dialogHeader = style({
   position: 'relative',
   textAlign: 'center',

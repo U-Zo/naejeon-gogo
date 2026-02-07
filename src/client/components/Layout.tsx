@@ -1,4 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router';
+import { AdminLoginButton } from '#/client/components/AdminAuth';
 import * as styles from '#/client/components/Layout.css';
 
 function SwordsIcon() {
@@ -81,6 +82,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>내전고고</h1>
+        <div className={styles.headerActions}>
+          <AdminLoginButton />
+        </div>
       </header>
       <main className={styles.main}>{children}</main>
       <nav className={styles.tabBar}>

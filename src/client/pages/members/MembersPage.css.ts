@@ -62,33 +62,6 @@ export const positionChips = style({
   marginTop: '4px',
 });
 
-export const formOverlay = style({
-  position: 'fixed',
-  inset: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 200,
-  padding: vars.space.lg,
-});
-
-export const formSheet = style({
-  width: '100%',
-  maxWidth: '400px',
-  maxHeight: '85vh',
-  overflowY: 'auto',
-  backgroundColor: vars.color.bgSecondary,
-  borderRadius: vars.radius.lg,
-  padding: vars.space.xl,
-});
-
-export const formTitle = style({
-  fontSize: vars.fontSize.lg,
-  fontWeight: 700,
-  color: vars.color.goldLight,
-});
-
 export const positionGrid = style({
   display: 'flex',
   flexWrap: 'wrap',
@@ -111,12 +84,6 @@ export const positionToggle = style({
       borderColor: vars.color.gold,
     },
   },
-});
-
-export const formActions = style({
-  display: 'flex',
-  gap: vars.space.sm,
-  marginTop: vars.space.xl,
 });
 
 export const addButtonWrapper = style({
