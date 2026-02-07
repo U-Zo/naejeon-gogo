@@ -229,6 +229,7 @@ export const draggableSlot = style({
   padding: '2px 4px',
   transition: 'opacity 0.2s, border-color 0.2s, background-color 0.2s',
   border: '1px solid transparent',
+  touchAction: 'none',
   selectors: {
     '&:hover': {
       backgroundColor: vars.color.bgHover,

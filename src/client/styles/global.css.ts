@@ -40,6 +40,7 @@ globalStyle('button', {
   background: 'none',
   fontFamily: 'inherit',
   color: 'inherit',
+  userSelect: 'none',
 });
 
 globalStyle('input, select', {
