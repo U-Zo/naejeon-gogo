@@ -22,6 +22,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: 'stylesheet',
         href: 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css',
       },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap',
+      },
     ],
   }),
   shellComponent: RootDocument,
