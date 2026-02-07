@@ -1,38 +1,49 @@
 import { createServerFn } from '@tanstack/react-start';
-import { TursoMatchRepository } from '#/server/match/match.repository.turso';
 import { MatchService } from '#/server/match/match.service';
 import { MmrCalculator } from '#/server/match/mmr-calculator';
 import type { TeamSlot } from '#/server/match/types';
-import { TursoMemberRepository } from '#/server/member/member.repository.turso';
 import { MemberService } from '#/server/member/member.service';
+import { getMatchRepository, getMemberRepository } from '#/server/repository';
 import type { TeamSide } from '#/server/shared/types';
 
-function getMatchService() {
-  return new MatchService(new TursoMatchRepository(), new MmrCalculator());
+async function getMatchService() {
+  return new MatchService(await getMatchRepository(), new MmrCalculator());
 }
 
-function getMemberService() {
-  return new MemberService(new TursoMemberRepository());
+async function getMemberService() {
+  return new MemberService(await getMemberRepository());
 }
 
 export const getMatches = createServerFn({ method: 'GET' }).handler(async () => {
-  return getMatchService().getAll();
+  return (await getMatchService()).getAll();
 });
 
-export const recordMatch = createServerFn({ method: 'POST' })
-  .inputValidator((data: { teamA: TeamSlot[]; teamB: TeamSlot[]; winner: TeamSide }) => data)
+export const createMatch = createServerFn({ method: 'POST' })
+  .inputValidator((data: { teamA: TeamSlot[]; teamB: TeamSlot[] }) => data)
   .handler(async ({ data }) => {
-    const matchService = getMatchService();
-    const memberService = getMemberService();
+    return (await getMatchService()).createMatch(data.teamA, data.teamB);
+  });
 
-    const { match, deltas } = await matchService.recordMatch(data.teamA, data.teamB, data.winner);
+export const completeMatch = createServerFn({ method: 'POST' })
+  .inputValidator((data: { id: string; winner: TeamSide }) => data)
+  .handler(async ({ data }) => {
+    const matchService = await getMatchService();
+    const memberService = await getMemberService();
 
-    const winnerTeam = data.winner === 'A' ? data.teamA : data.teamB;
-    const loserTeam = data.winner === 'A' ? data.teamB : data.teamA;
+    const { match, deltas } = await matchService.completeMatch(data.id, data.winner);
+
+    const winnerTeam = data.winner === 'A' ? match.teamA : match.teamB;
+    const loserTeam = data.winner === 'A' ? match.teamB : match.teamA;
     const winnerIds = winnerTeam.map((s) => s.memberId);
     const loserIds = loserTeam.map((s) => s.memberId);
 
     await memberService.applyMmrDeltas(deltas, winnerIds, loserIds);
 
     return { match, deltas };
+  });
+
+export const cancelMatch = createServerFn({ method: 'POST' })
+  .inputValidator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    await (await getMatchService()).cancelMatch(data.id);
   });

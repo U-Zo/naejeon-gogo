@@ -18,29 +18,52 @@ export class MatchService {
     return this.repo.findById(id);
   }
 
-  async recordMatch(
-    teamA: TeamSlot[],
-    teamB: TeamSlot[],
-    winner: TeamSide,
-  ): Promise<{ match: Match; deltas: MmrDelta[] }> {
+  async createMatch(teamA: TeamSlot[], teamB: TeamSlot[]): Promise<Match> {
     const match: Match = {
       id: crypto.randomUUID(),
       date: new Date().toISOString(),
       teamA,
       teamB,
-      winner,
+      status: 'in_progress',
+      winner: null,
     };
 
     await this.repo.save(match);
+    return match;
+  }
 
-    const winnerSlots = winner === 'A' ? teamA : teamB;
-    const loserSlots = winner === 'A' ? teamB : teamA;
+  async completeMatch(id: string, winner: TeamSide): Promise<{ match: Match; deltas: MmrDelta[] }> {
+    const match = await this.repo.findById(id);
+    if (!match) {
+      throw new Error('매치를 찾을 수 없습니다.');
+    }
+    if (match.status !== 'in_progress') {
+      throw new Error('진행 중인 매치만 완료할 수 있습니다.');
+    }
+
+    const updated: Match = { ...match, status: 'completed', winner };
+    await this.repo.save(updated);
+
+    const winnerSlots = winner === 'A' ? match.teamA : match.teamB;
+    const loserSlots = winner === 'A' ? match.teamB : match.teamA;
 
     const deltas = this.mmrCalculator.calculate(
       winnerSlots.map((s) => s.memberId),
       loserSlots.map((s) => s.memberId),
     );
 
-    return { match, deltas };
+    return { match: updated, deltas };
+  }
+
+  async cancelMatch(id: string): Promise<void> {
+    const match = await this.repo.findById(id);
+    if (!match) {
+      throw new Error('매치를 찾을 수 없습니다.');
+    }
+    if (match.status !== 'in_progress') {
+      throw new Error('진행 중인 매치만 취소할 수 있습니다.');
+    }
+
+    await this.repo.delete(id);
   }
 }

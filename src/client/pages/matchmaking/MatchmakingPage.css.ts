@@ -171,69 +171,6 @@ export const actionBar = style({
   marginTop: vars.space.lg,
 });
 
-export const resultOverlay = style({
-  position: 'fixed',
-  inset: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 200,
-  padding: vars.space.lg,
-});
-
-export const resultSheet = style({
-  width: '100%',
-  maxWidth: '480px',
-  backgroundColor: vars.color.bgSecondary,
-  borderRadius: vars.radius.lg,
-  padding: vars.space.xl,
-  textAlign: 'center',
-});
-
-export const resultTitle = style({
-  fontSize: vars.fontSize.lg,
-  fontWeight: 700,
-  color: vars.color.goldLight,
-});
-
-export const resultTeams = style({
-  display: 'flex',
-  alignItems: 'flex-start',
-  gap: vars.space.xs,
-});
-
-export const resultTeamColumn = style({
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '2px',
-  textAlign: 'left',
-});
-
-export const resultVs = style({
-  fontSize: vars.fontSize.sm,
-  fontWeight: 700,
-  color: vars.color.goldDark,
-  flexShrink: 0,
-  paddingTop: vars.space.xl,
-});
-
-export const resultSlotRight = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  gap: vars.space.xs,
-  padding: '2px 0',
-  fontSize: vars.fontSize.sm,
-});
-
-export const resultButtons = style({
-  display: 'flex',
-  gap: vars.space.md,
-  marginTop: vars.space.lg,
-});
-
 export const vsText = style({
   textAlign: 'center',
   fontSize: vars.fontSize.lg,
@@ -242,12 +179,3 @@ export const vsText = style({
   padding: `${vars.space.xs} 0`,
 });
 
-const _errorBox = style({
-  backgroundColor: 'rgba(224, 64, 64, 0.1)',
-  border: `1px solid ${vars.color.error}`,
-  borderRadius: vars.radius.md,
-  padding: vars.space.md,
-  color: vars.color.error,
-  fontSize: vars.fontSize.sm,
-  marginBottom: vars.space.md,
-});

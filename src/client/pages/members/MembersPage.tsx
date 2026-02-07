@@ -59,6 +59,7 @@ export function MembersPage() {
     let wins = 0;
     let losses = 0;
     for (const match of matches) {
+      if (match.status !== 'completed') continue;
       const inA = match.teamA.some((s) => s.memberId === memberId);
       const inB = match.teamB.some((s) => s.memberId === memberId);
       if (!inA && !inB) continue;

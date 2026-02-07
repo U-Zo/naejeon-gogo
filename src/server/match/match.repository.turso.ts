@@ -1,6 +1,7 @@
 import { db, dbReady } from '#/server/db';
 import type { IMatchRepository } from '#/server/match/match.repository';
-import type { Match, TeamSlot } from '#/server/match/types';
+import type { Match, MatchStatus, TeamSlot } from '#/server/match/types';
+import type { TeamSide } from '#/server/shared/types';
 
 export class TursoMatchRepository implements IMatchRepository {
   async findAll(): Promise<Match[]> {
@@ -31,10 +32,12 @@ export class TursoMatchRepository implements IMatchRepository {
     return matchResult.rows.map((row) => {
       const matchId = row.id as string;
       const slots = slotsByMatch.get(matchId) ?? { teamA: [], teamB: [] };
+      const winner = row.winner as string;
       return {
         id: matchId,
         date: row.date as string,
-        winner: row.winner as Match['winner'],
+        status: (row.status as MatchStatus) ?? 'completed',
+        winner: (winner === 'A' || winner === 'B' ? winner : null) as TeamSide | null,
         teamA: slots.teamA,
         teamB: slots.teamB,
       };
@@ -67,10 +70,12 @@ export class TursoMatchRepository implements IMatchRepository {
       }
     }
 
+    const winner = row.winner as string;
     return {
       id: row.id as string,
       date: row.date as string,
-      winner: row.winner as Match['winner'],
+      status: (row.status as MatchStatus) ?? 'completed',
+      winner: (winner === 'A' || winner === 'B' ? winner : null) as TeamSide | null,
       teamA,
       teamB,
     };
@@ -92,10 +97,18 @@ export class TursoMatchRepository implements IMatchRepository {
 
     await db.batch([
       {
-        sql: `INSERT OR REPLACE INTO matches (id, date, winner) VALUES (?, ?, ?)`,
-        args: [match.id, match.date, match.winner],
+        sql: `INSERT OR REPLACE INTO matches (id, date, winner, status) VALUES (?, ?, ?, ?)`,
+        args: [match.id, match.date, match.winner ?? '', match.status],
       },
       ...slotStatements,
+    ]);
+  }
+
+  async delete(id: string): Promise<void> {
+    await dbReady;
+    await db.batch([
+      { sql: 'DELETE FROM match_slots WHERE matchId = ?', args: [id] },
+      { sql: 'DELETE FROM matches WHERE id = ?', args: [id] },
     ]);
   }
 }

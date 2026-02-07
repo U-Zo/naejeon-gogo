@@ -5,12 +5,15 @@ export type TeamSlot = {
   position: Position;
 };
 
+export type MatchStatus = 'in_progress' | 'completed';
+
 export type Match = {
   id: string;
   date: string;
   teamA: TeamSlot[];
   teamB: TeamSlot[];
-  winner: TeamSide;
+  status: MatchStatus;
+  winner: TeamSide | null;
 };
 
 export type MatchCandidate = {

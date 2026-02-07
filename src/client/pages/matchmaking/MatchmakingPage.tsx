@@ -2,28 +2,26 @@ import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { openErrorDialog } from '#/client/components/ErrorDialog';
 import type { MatchCandidate } from '#/client/domains/match';
-import { useRecordMatch } from '#/client/domains/match';
+import { useCreateMatch } from '#/client/domains/match';
 import { useGenerateMatch } from '#/client/domains/matchmaking';
 import type { Member } from '#/client/domains/member';
 import { useMembers } from '#/client/domains/member';
-import type { TeamSide } from '#/client/domains/position';
 import { POSITION_LABELS } from '#/client/domains/position';
 import * as styles from '#/client/pages/matchmaking/MatchmakingPage.css';
 import * as common from '#/client/styles/common.css';
 
-type Phase = 'select' | 'candidates' | 'result';
+type Phase = 'select' | 'candidates';
 
 export function MatchmakingPage() {
   const { data: members } = useMembers();
   const { execute: generateMatch, isPending: isGenerating } = useGenerateMatch();
-  const { execute: recordMatch, isPending: isRecording } = useRecordMatch();
+  const { execute: createMatch, isPending: isCreating } = useCreateMatch();
   const navigate = useNavigate();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [candidates, setCandidates] = useState<MatchCandidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState(0);
   const [phase, setPhase] = useState<Phase>('select');
-  const [showResultInput, setShowResultInput] = useState(false);
 
   const memberMap = new Map(members.map((m) => [m.id, m]));
 
@@ -55,8 +53,16 @@ export function MatchmakingPage() {
     }
   };
 
-  const handleConfirm = () => {
-    setShowResultInput(true);
+  const handleConfirm = async () => {
+    if (isCreating) return;
+    const candidate = candidates[selectedCandidate];
+    if (!candidate) return;
+    try {
+      await createMatch({ teamA: candidate.teamA, teamB: candidate.teamB });
+      navigate({ to: '/history' });
+    } catch (e) {
+      openErrorDialog(e instanceof Error ? e.message : '매치 생성에 실패했습니다.');
+    }
   };
 
   const handleReroll = async () => {
@@ -67,18 +73,6 @@ export function MatchmakingPage() {
       setSelectedCandidate(0);
     } catch (e) {
       openErrorDialog(e instanceof Error ? e.message : '매칭 생성에 실패했습니다.');
-    }
-  };
-
-  const handleRecordResult = async (winner: TeamSide) => {
-    if (isRecording) return;
-    const candidate = candidates[selectedCandidate];
-    if (!candidate) return;
-    try {
-      await recordMatch({ teamA: candidate.teamA, teamB: candidate.teamB, winner });
-      navigate({ to: '/history' });
-    } catch (e) {
-      openErrorDialog(e instanceof Error ? e.message : '결과 기록에 실패했습니다.');
     }
   };
 
@@ -110,17 +104,7 @@ export function MatchmakingPage() {
           onConfirm={handleConfirm}
           onReroll={handleReroll}
           onBack={handleBack}
-          loading={isGenerating}
-        />
-      )}
-
-      {showResultInput && (
-        <ResultInput
-          candidate={candidates[selectedCandidate]}
-          memberMap={memberMap}
-          onRecord={handleRecordResult}
-          onCancel={() => setShowResultInput(false)}
-          loading={isRecording}
+          loading={isGenerating || isCreating}
         />
       )}
     </>
@@ -301,101 +285,14 @@ function CandidatesPhase({
         >
           {loading ? '리롤 중...' : '리롤'}
         </button>
-        <button className={common.buttonPrimary} style={{ flex: 1 }} onClick={onConfirm}>
+        <button
+          className={common.buttonPrimary}
+          style={{ flex: 1 }}
+          disabled={loading}
+          onClick={onConfirm}
+        >
           확정
         </button>
-      </div>
-    </div>
-  );
-}
-
-function ResultInput({
-  candidate,
-  memberMap,
-  onRecord,
-  onCancel,
-  loading,
-}: {
-  candidate: MatchCandidate;
-  memberMap: Map<string, Member>;
-  onRecord: (winner: TeamSide) => void;
-  onCancel: () => void;
-  loading: boolean;
-}) {
-  return (
-    <div className={styles.resultOverlay} onClick={onCancel}>
-      <div className={styles.resultSheet} onClick={(e) => e.stopPropagation()}>
-        <div className={common.dialogHeader}>
-          <h3 className={styles.resultTitle}>경기 결과 입력</h3>
-          <button className={common.closeButton} onClick={onCancel}>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
-
-        <div className={styles.resultTeams}>
-          <div className={styles.resultTeamColumn}>
-            <div className={styles.teamLabelA}>
-              <span>팀 A ({candidate.teamATotal})</span>
-            </div>
-            {candidate.teamA.map((slot) => (
-              <div key={slot.memberId} className={styles.slotRow}>
-                <span className={styles.slotPosition}>{POSITION_LABELS[slot.position]}</span>
-                <span className={styles.slotName}>
-                  {memberMap.get(slot.memberId)?.name ?? '???'}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.resultVs}>VS</div>
-
-          <div className={styles.resultTeamColumn}>
-            <div className={styles.teamLabelB}>
-              <span>팀 B ({candidate.teamBTotal})</span>
-            </div>
-            {candidate.teamB.map((slot) => (
-              <div key={slot.memberId} className={styles.resultSlotRight}>
-                <span className={styles.slotName} style={{ textAlign: 'right' }}>
-                  {memberMap.get(slot.memberId)?.name ?? '???'}
-                </span>
-                <span className={styles.slotPosition} style={{ textAlign: 'right' }}>
-                  {POSITION_LABELS[slot.position]}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.resultButtons}>
-          <button
-            className={common.buttonTeamA}
-            style={{ flex: 1 }}
-            disabled={loading}
-            onClick={() => onRecord('A')}
-          >
-            {loading ? '기록 중...' : '팀 A 승리'}
-          </button>
-          <button
-            className={common.buttonTeamB}
-            style={{ flex: 1 }}
-            disabled={loading}
-            onClick={() => onRecord('B')}
-          >
-            {loading ? '기록 중...' : '팀 B 승리'}
-          </button>
-        </div>
       </div>
     </div>
   );
