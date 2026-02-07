@@ -42,30 +42,6 @@ export const memberRow = style({
   },
 });
 
-export const memberRowCheck = style({
-  width: '18px',
-  height: '18px',
-  borderRadius: '4px',
-  border: `2px solid ${vars.color.textMuted}`,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-  transition: 'all 0.2s',
-  selectors: {
-    [`${memberRow}[data-selected="true"] &`]: {
-      backgroundColor: vars.color.gold,
-      borderColor: vars.color.gold,
-    },
-  },
-});
-
-export const checkMark = style({
-  color: vars.color.bgPrimary,
-  fontSize: '12px',
-  fontWeight: 700,
-});
-
 export const memberRowInfo = style({
   flex: 1,
   minWidth: 0,
@@ -149,7 +125,7 @@ export const teamSection = style({
   marginBottom: vars.space.sm,
 });
 
-export const teamLabel = style({
+const teamLabel = style({
   fontSize: vars.fontSize.xs,
   fontWeight: 700,
   marginBottom: vars.space.xs,
@@ -266,7 +242,7 @@ export const vsText = style({
   padding: `${vars.space.xs} 0`,
 });
 
-export const errorBox = style({
+const _errorBox = style({
   backgroundColor: 'rgba(224, 64, 64, 0.1)',
   border: `1px solid ${vars.color.error}`,
   borderRadius: vars.radius.md,

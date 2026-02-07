@@ -19,12 +19,6 @@ export const getMatches = createServerFn({ method: 'GET' }).handler(async () => 
   return getMatchService().getAll();
 });
 
-export const getMatch = createServerFn({ method: 'GET' })
-  .inputValidator((id: string) => id)
-  .handler(async ({ data: id }) => {
-    return getMatchService().getById(id);
-  });
-
 export const recordMatch = createServerFn({ method: 'POST' })
   .inputValidator((data: { teamA: TeamSlot[]; teamB: TeamSlot[]; winner: TeamSide }) => data)
   .handler(async ({ data }) => {

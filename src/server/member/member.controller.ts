@@ -11,12 +11,6 @@ export const getMembers = createServerFn({ method: 'GET' }).handler(async () => 
   return getService().getAll();
 });
 
-export const getMember = createServerFn({ method: 'GET' })
-  .inputValidator((id: string) => id)
-  .handler(async ({ data: id }) => {
-    return getService().getById(id);
-  });
-
 export const createMember = createServerFn({ method: 'POST' })
   .inputValidator((input: MemberInput) => input)
   .handler(async ({ data: input }) => {

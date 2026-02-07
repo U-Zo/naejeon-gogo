@@ -3,7 +3,7 @@ import type { IPositionAssigner } from '#/server/matchmaking/position-assigner';
 import type { MatchCandidate } from '#/server/matchmaking/types';
 import type { Member } from '#/server/member/types';
 
-export interface IMatchmakingService {
+interface IMatchmakingService {
   generateCandidates(members: Member[]): MatchCandidate[];
 }
 

@@ -19,6 +19,7 @@ export class TursoMatchRepository implements IMatchRepository {
         memberId: row.memberId as string,
         position: row.position as TeamSlot['position'],
       };
+
       const slots = slotsByMatch.get(matchId)!;
       if (row.team === 'A') {
         slots.teamA.push(slot);

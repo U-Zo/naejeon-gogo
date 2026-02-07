@@ -13,11 +13,6 @@ export type Match = {
   winner: TeamSide;
 };
 
-export type MmrDelta = {
-  memberId: string;
-  delta: number;
-};
-
 export type MatchCandidate = {
   teamA: TeamSlot[];
   teamB: TeamSlot[];
