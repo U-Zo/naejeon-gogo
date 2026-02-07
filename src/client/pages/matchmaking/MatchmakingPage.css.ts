@@ -220,3 +220,52 @@ export const actionBar = style({
   gap: vars.space.sm,
   marginTop: vars.space.lg,
 });
+
+// --- Drag and Drop styles ---
+
+export const draggableSlot = style({
+  cursor: 'grab',
+  borderRadius: vars.radius.sm,
+  padding: '2px 4px',
+  transition: 'opacity 0.2s, border-color 0.2s, background-color 0.2s',
+  border: '1px solid transparent',
+  selectors: {
+    '&:hover': {
+      backgroundColor: vars.color.bgHover,
+      borderColor: vars.color.border,
+    },
+  },
+});
+
+export const draggableSlotDragging = style({
+  opacity: 0.3,
+  borderStyle: 'dashed',
+  borderColor: vars.color.goldDark,
+});
+
+export const droppableSlotOver = style({
+  borderColor: vars.color.gold,
+  backgroundColor: vars.color.bgHover,
+});
+
+export const dragOverlay = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space.xs,
+  fontSize: vars.fontSize.md,
+  padding: '2px 4px',
+  borderRadius: vars.radius.sm,
+  backgroundColor: vars.color.bgCard,
+  border: `1px solid ${vars.color.gold}`,
+  boxShadow: `0 4px 12px rgba(0, 0, 0, 0.5)`,
+  cursor: 'grabbing',
+});
+
+export const modifiedBadge = style({
+  fontSize: vars.fontSize.xs,
+  padding: `2px ${vars.space.sm}`,
+  borderRadius: '999px',
+  backgroundColor: vars.color.bgHover,
+  color: vars.color.warning,
+  fontWeight: 600,
+});
