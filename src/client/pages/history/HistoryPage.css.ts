@@ -1,10 +1,5 @@
-import { keyframes, style } from '@vanilla-extract/css';
+import { style } from '@vanilla-extract/css';
 import { vars } from '#/client/styles/theme.css';
-
-const borderGlow = keyframes({
-  '0%, 100%': { borderColor: vars.color.goldDark, boxShadow: `0 0 8px rgba(200, 170, 110, 0.15)` },
-  '50%': { borderColor: vars.color.gold, boxShadow: `0 0 16px rgba(200, 170, 110, 0.3)` },
-});
 
 
 export const matchList = style({
@@ -43,7 +38,19 @@ export const teamColumn = style({
   display: 'flex',
   flexDirection: 'column',
   gap: vars.space.xs,
+  borderRadius: vars.radius.sm,
+  padding: vars.space.xs,
 });
+
+export const winnerTeamA = style([
+  teamColumn,
+  { backgroundColor: 'rgba(74, 144, 217, 0.1)' },
+]);
+
+export const winnerTeamB = style([
+  teamColumn,
+  { backgroundColor: 'rgba(217, 74, 74, 0.1)' },
+]);
 
 const teamLabel = style({
   fontSize: vars.fontSize.sm,
@@ -100,6 +107,8 @@ export const vsColumn = style({
   alignItems: 'center',
   justifyContent: 'center',
   paddingTop: vars.space.xl,
+  paddingLeft: vars.space.md,
+  paddingRight: vars.space.md,
   flexShrink: 0,
 });
 
@@ -126,23 +135,17 @@ export const winnerBadgeB = style([
   { backgroundColor: vars.color.teamB, color: '#fff' },
 ]);
 
-export const sectionTitle = style({
-  fontSize: vars.fontSize.sm,
-  fontWeight: 700,
-  color: vars.color.goldDark,
-  margin: `${vars.space.md} 0 ${vars.space.sm}`,
-});
-
 export const completedSection = style({
   marginTop: vars.space.lg,
 });
 
 export const inProgressCard = style({
+  position: 'relative',
+  overflow: 'hidden',
   backgroundColor: vars.color.bgCard,
-  border: `1.5px solid ${vars.color.goldDark}`,
+  border: 'none',
   borderRadius: vars.radius.md,
   padding: vars.space.md,
-  animation: `${borderGlow} 3s ease-in-out infinite`,
 });
 
 export const inProgressBadge = style([

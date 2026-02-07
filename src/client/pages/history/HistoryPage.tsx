@@ -1,4 +1,5 @@
 import { openErrorDialog } from '#/client/components/ErrorDialog';
+import { ShineBorder } from '#/client/components/ShineBorder';
 import type { Match, TeamSlot } from '#/client/domains/match';
 import { useCancelMatch, useCompleteMatch, useMatches } from '#/client/domains/match';
 import type { Member } from '#/client/domains/member';
@@ -52,8 +53,6 @@ export function HistoryPage() {
       )}
 
       {inProgressMatches.length > 0 && (
-        <>
-          <h3 className={styles.sectionTitle}>진행 중</h3>
           <div className={styles.matchList}>
             {inProgressMatches.map((match) => (
               <InProgressCard
@@ -66,7 +65,6 @@ export function HistoryPage() {
               />
             ))}
           </div>
-        </>
       )}
 
       {completedMatches.length > 0 && (
@@ -97,6 +95,7 @@ function InProgressCard({
 
   return (
     <div className={styles.inProgressCard}>
+      <ShineBorder borderWidth={1.5} duration={8} shineColor={['#c8aa6e', '#f0e6d2']} />
       <div className={styles.matchHeader}>
         <span className={styles.matchDate}>{formatDate(match.date)}</span>
         <span className={styles.inProgressBadge}>진행 중</span>
@@ -178,10 +177,14 @@ function TeamColumn({
   getName: (id: string) => string;
   isWinner: boolean;
 }) {
+  const columnClass = isWinner
+    ? side === 'A' ? styles.winnerTeamA : styles.winnerTeamB
+    : styles.teamColumn;
+
   return (
-    <div className={styles.teamColumn}>
+    <div className={columnClass}>
       <span className={side === 'A' ? styles.teamLabelA : styles.teamLabelB}>
-        팀 {label} {isWinner && '🏆'}
+        팀 {label}
       </span>
       <div className={styles.teamMembers}>
         {slots.map((slot) => (
