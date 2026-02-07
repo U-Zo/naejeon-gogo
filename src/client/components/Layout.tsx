@@ -80,7 +80,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>내전 ㄱㄱ</h1>
+        <h1 className={styles.title}>내전고고</h1>
       </header>
       <main className={styles.main}>{children}</main>
       <nav className={styles.tabBar}>
