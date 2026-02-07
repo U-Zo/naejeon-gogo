@@ -210,7 +210,7 @@ function MemberCard({
       : 0;
 
   return (
-    <div className={styles.memberCard} onClick={isAdmin ? onEdit : undefined} style={isAdmin ? undefined : { cursor: 'default' }}>
+    <div className={styles.memberCard} onClick={onEdit}>
       <div className={styles.memberInfo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className={styles.memberName}>{member.name}</span>
@@ -284,6 +284,7 @@ function MemberForm({
   onUpdate: (id: string, updates: Partial<MemberInput> & { mmr?: number }) => void;
   onClose: () => void;
 }) {
+  const { isAdmin } = useAuth();
   const [name, setName] = useState(member?.name ?? '');
   const [mainPosition, setMainPosition] = useState<Position>(member?.mainPosition ?? 'mid');
   const [subPositions, setSubPositions] = useState<Position[]>(member?.subPositions ?? []);
@@ -383,6 +384,7 @@ function MemberForm({
             value={mmr}
             onChange={(e) => setMmr(Number(e.target.value))}
             min={0}
+            disabled={!isAdmin}
           />
         </div>
 
