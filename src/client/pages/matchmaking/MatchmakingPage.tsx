@@ -222,6 +222,7 @@ function CandidatesPhase({
     <div className={styles.section}>
       <h3 className={styles.sectionTitle}>매칭 후보 ({candidates.length}개)</h3>
 
+      <div className={styles.candidateList}>
       {candidates.map((candidate, i) => (
         <button
           key={i}
@@ -235,43 +236,48 @@ function CandidatesPhase({
             <span className={styles.mmrDiffBadge}>MMR 차이: {candidate.mmrDiff}</span>
           </div>
 
-          <div className={styles.teamSection}>
-            <div className={styles.teamLabelA}>
-              <span>팀 A</span>
-              <span className={styles.teamMmr}>{candidate.teamATotal}</span>
+          <div className={styles.matchTeams}>
+            <div className={styles.teamColumn}>
+              <span className={styles.teamLabelA}>
+                팀 A <span className={styles.teamMmr}>{candidate.teamATotal}</span>
+              </span>
+              <div className={styles.teamMembers}>
+                {candidate.teamA.map((slot) => {
+                  const member = memberMap.get(slot.memberId);
+                  return (
+                    <div key={slot.memberId} className={styles.memberSlot}>
+                      <span className={styles.positionTag}>{POSITION_LABELS[slot.position]}</span>
+                      <span className={styles.memberName}>{member?.name ?? '???'}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            {candidate.teamA.map((slot) => {
-              const member = memberMap.get(slot.memberId);
-              return (
-                <div key={slot.memberId} className={styles.slotRow}>
-                  <span className={styles.slotPosition}>{POSITION_LABELS[slot.position]}</span>
-                  <span className={styles.slotName}>{member?.name ?? '???'}</span>
-                  <span className={common.mmrText}>{member?.mmr ?? 0}</span>
-                </div>
-              );
-            })}
-          </div>
 
-          <div className={styles.vsText}>VS</div>
-
-          <div className={styles.teamSection}>
-            <div className={styles.teamLabelB}>
-              <span>팀 B</span>
-              <span className={styles.teamMmr}>{candidate.teamBTotal}</span>
+            <div className={styles.vsColumn}>
+              <span className={styles.vsLabel}>VS</span>
             </div>
-            {candidate.teamB.map((slot) => {
-              const member = memberMap.get(slot.memberId);
-              return (
-                <div key={slot.memberId} className={styles.slotRow}>
-                  <span className={styles.slotPosition}>{POSITION_LABELS[slot.position]}</span>
-                  <span className={styles.slotName}>{member?.name ?? '???'}</span>
-                  <span className={common.mmrText}>{member?.mmr ?? 0}</span>
-                </div>
-              );
-            })}
+
+            <div className={styles.teamColumn}>
+              <span className={styles.teamLabelB}>
+                <span className={styles.teamMmr}>{candidate.teamBTotal}</span> 팀 B
+              </span>
+              <div className={styles.teamMembers}>
+                {candidate.teamB.map((slot) => {
+                  const member = memberMap.get(slot.memberId);
+                  return (
+                    <div key={slot.memberId} className={styles.memberSlotRight}>
+                      <span className={styles.positionTag}>{POSITION_LABELS[slot.position]}</span>
+                      <span className={styles.memberName}>{member?.name ?? '???'}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </button>
       ))}
+      </div>
 
       <div className={styles.actionBar}>
         <button className={common.buttonSecondary} onClick={onBack}>

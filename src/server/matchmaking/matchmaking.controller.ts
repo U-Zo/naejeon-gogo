@@ -2,15 +2,15 @@ import { createServerFn } from '@tanstack/react-start';
 import { BalanceCalculator } from '#/server/matchmaking/balance-calculator';
 import { MatchmakingService } from '#/server/matchmaking/matchmaking.service';
 import { PositionAssigner } from '#/server/matchmaking/position-assigner';
-import { TursoMemberRepository } from '#/server/member/member.repository.turso';
 import { MemberService } from '#/server/member/member.service';
+import { getMemberRepository } from '#/server/repository';
 
 function getService() {
   return new MatchmakingService(new PositionAssigner(), new BalanceCalculator());
 }
 
-function getMemberService() {
-  return new MemberService(new TursoMemberRepository());
+async function getMemberService() {
+  return new MemberService(await getMemberRepository());
 }
 
 export const generateMatch = createServerFn({ method: 'POST' })
@@ -20,7 +20,7 @@ export const generateMatch = createServerFn({ method: 'POST' })
       throw new Error('정확히 10명의 참가자를 선택해주세요.');
     }
 
-    const memberService = getMemberService();
+    const memberService = await getMemberService();
     const members = await Promise.all(memberIds.map((id: string) => memberService.getById(id)));
 
     const validMembers = members.filter((m) => m !== null);

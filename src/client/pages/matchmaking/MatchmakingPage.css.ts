@@ -77,6 +77,14 @@ export const selectionCountHighlight = style({
   color: vars.color.gold,
 });
 
+// --- Candidate cards (matches history card style) ---
+
+export const candidateList = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.md,
+});
+
 export const candidateCard = style({
   width: '100%',
   textAlign: 'left',
@@ -84,7 +92,6 @@ export const candidateCard = style({
   border: `1px solid ${vars.color.border}`,
   borderRadius: vars.radius.md,
   padding: vars.space.md,
-  marginBottom: vars.space.md,
   cursor: 'pointer',
   transition: 'border-color 0.2s, background-color 0.2s',
   selectors: {
@@ -121,48 +128,91 @@ export const mmrDiffBadge = style({
   fontFamily: vars.font.mono,
 });
 
-export const teamSection = style({
-  marginBottom: vars.space.sm,
+export const matchTeams = style({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: vars.space.xs,
+});
+
+export const teamColumn = style({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space.xs,
 });
 
 const teamLabel = style({
-  fontSize: vars.fontSize.xs,
+  fontSize: vars.fontSize.sm,
   fontWeight: 700,
-  marginBottom: vars.space.xs,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
+  gap: vars.space.xs,
 });
 
 export const teamLabelA = style([teamLabel, { color: vars.color.teamA }]);
-
-export const teamLabelB = style([
-  teamLabel,
-  { color: vars.color.teamB, justifyContent: 'flex-end' },
-]);
+export const teamLabelB = style([teamLabel, { color: vars.color.teamB, justifyContent: 'flex-end' }]);
 
 export const teamMmr = style({
   fontFamily: vars.font.mono,
   fontWeight: 400,
+  fontSize: vars.fontSize.xs,
+  color: vars.color.textMuted,
 });
 
-export const slotRow = style({
+export const teamMembers = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
+});
+
+export const memberSlot = style({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: `2px 0`,
+  gap: vars.space.xs,
+  fontSize: vars.fontSize.md,
+});
+
+export const memberSlotRight = style([
+  {
+    display: 'flex',
+    alignItems: 'center',
+    gap: vars.space.xs,
+    fontSize: vars.fontSize.md,
+    flexDirection: 'row-reverse',
+  },
+]);
+
+export const positionTag = style({
   fontSize: vars.fontSize.sm,
-});
-
-export const slotPosition = style({
-  width: '50px',
   color: vars.color.textMuted,
-  fontSize: vars.fontSize.xs,
+  flexShrink: 0,
+  width: '46px',
+  selectors: {
+    [`${memberSlotRight} &`]: {
+      textAlign: 'right',
+    },
+  },
 });
 
-export const slotName = style({
-  flex: 1,
+export const memberName = style({
   color: vars.color.textPrimary,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+});
+
+export const vsColumn = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingTop: vars.space.xl,
+  flexShrink: 0,
+});
+
+export const vsLabel = style({
+  fontSize: vars.fontSize.sm,
+  fontWeight: 700,
+  color: vars.color.goldDark,
 });
 
 export const actionBar = style({
@@ -170,12 +220,3 @@ export const actionBar = style({
   gap: vars.space.sm,
   marginTop: vars.space.lg,
 });
-
-export const vsText = style({
-  textAlign: 'center',
-  fontSize: vars.fontSize.lg,
-  fontWeight: 700,
-  color: vars.color.goldDark,
-  padding: `${vars.space.xs} 0`,
-});
-
