@@ -10,7 +10,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'WAR - 5v5 내전 매칭' },
+      { title: '내전 ㄱㄱ - 5v5 내전 매칭' },
+      { property: 'og:title', content: '내전 ㄱㄱ - 5v5 내전 매칭' },
+      { property: 'og:description', content: 'MMR, 포지션 기반 자동 밸런싱 5v5 내전' },
+      { property: 'og:type', content: 'website' },
+      { name: 'theme-color', content: '#c8aa6e' },
     ],
     links: [
       {

@@ -13,7 +13,6 @@ RUN pnpm build
 
 FROM base AS runtime
 COPY --from=build /app/.output ./.output
-COPY --from=build /app/data ./data
 
 ENV HOST=0.0.0.0
 ENV PORT=3000
