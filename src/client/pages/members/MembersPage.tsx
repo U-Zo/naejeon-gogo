@@ -4,6 +4,7 @@ import { useAuth } from '#/client/domains/auth';
 import { useMatches } from '#/client/domains/match';
 import type { Member, MemberInput } from '#/client/domains/member';
 import {
+  filterMembersByName,
   useCreateMember,
   useDeleteMember,
   useMembers,
@@ -74,7 +75,7 @@ export function MembersPage() {
   };
 
   const [search, setSearch] = useState('');
-  const filtered = members.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = filterMembersByName(members, search);
   const regularMembers = filtered.filter((m) => !m.isTemporary);
   const tempMembers = filtered.filter((m) => m.isTemporary);
 

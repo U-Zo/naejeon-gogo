@@ -1,7 +1,7 @@
 import { createContext, useCallback, useState } from 'react';
 import { verifyAdminPassword } from '#/server/auth/auth.controller';
 
-export type AuthContextValue = {
+type AuthContextValue = {
   isAdmin: boolean;
   login: (password: string) => Promise<{ success: boolean }>;
   logout: () => void;

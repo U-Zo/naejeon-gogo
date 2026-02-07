@@ -17,7 +17,7 @@ import type { MatchCandidate, TeamSlot } from '#/client/domains/match';
 import { useCreateMatch } from '#/client/domains/match';
 import { useGenerateMatch } from '#/client/domains/matchmaking';
 import type { Member } from '#/client/domains/member';
-import { useMembers } from '#/client/domains/member';
+import { filterMembersByName, useMembers } from '#/client/domains/member';
 import { POSITION_LABELS } from '#/client/domains/position';
 import * as styles from '#/client/pages/matchmaking/MatchmakingPage.css';
 import * as common from '#/client/styles/common.css';
@@ -225,7 +225,7 @@ function SelectPhase({
   loading: boolean;
 }) {
   const [search, setSearch] = useState('');
-  const filtered = members.filter((m) => m.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = filterMembersByName(members, search);
 
   return (
     <div className={styles.section}>
