@@ -119,11 +119,21 @@ export const formActions = style({
   marginTop: vars.space.xl,
 });
 
-export const addButton = style({
+export const addButtonWrapper = style({
   position: 'fixed',
+  bottom: 0,
+  left: '50%',
+  transform: 'translateX(-50%)',
+  width: '100%',
+  maxWidth: '480px',
+  pointerEvents: 'none',
+  zIndex: 50,
+});
+
+export const addButton = style({
+  position: 'absolute',
   bottom: '88px',
-  right: '50%',
-  transform: 'translateX(calc(240px - 16px))',
+  right: vars.space.lg,
   width: '48px',
   height: '48px',
   borderRadius: '50%',
@@ -137,11 +147,11 @@ export const addButton = style({
   alignItems: 'center',
   justifyContent: 'center',
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.6)',
-  zIndex: 50,
+  pointerEvents: 'auto',
   transition: 'transform 0.2s',
   selectors: {
     '&:hover': {
-      transform: 'translateX(calc(240px - 16px)) scale(1.1)',
+      transform: 'scale(1.1)',
     },
   },
 });

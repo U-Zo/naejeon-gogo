@@ -135,9 +135,11 @@ export function MembersPage() {
         </div>
       )}
 
-      <button className={styles.addButton} onClick={openCreate}>
-        +
-      </button>
+      <div className={styles.addButtonWrapper}>
+        <button className={styles.addButton} onClick={openCreate}>
+          +
+        </button>
+      </div>
 
       {showForm && (
         <MemberForm
