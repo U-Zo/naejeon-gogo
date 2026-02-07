@@ -1,18 +1,18 @@
 import { createServerFn } from '@tanstack/react-start';
-import { JsonMatchRepository } from '#/server/match/match.repository.json';
+import { TursoMatchRepository } from '#/server/match/match.repository.turso';
 import { MatchService } from '#/server/match/match.service';
 import { MmrCalculator } from '#/server/match/mmr-calculator';
 import type { TeamSlot } from '#/server/match/types';
-import { JsonMemberRepository } from '#/server/member/member.repository.json';
+import { TursoMemberRepository } from '#/server/member/member.repository.turso';
 import { MemberService } from '#/server/member/member.service';
 import type { TeamSide } from '#/server/shared/types';
 
 function getMatchService() {
-  return new MatchService(new JsonMatchRepository(), new MmrCalculator());
+  return new MatchService(new TursoMatchRepository(), new MmrCalculator());
 }
 
 function getMemberService() {
-  return new MemberService(new JsonMemberRepository());
+  return new MemberService(new TursoMemberRepository());
 }
 
 export const getMatches = createServerFn({ method: 'GET' }).handler(async () => {

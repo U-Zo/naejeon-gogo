@@ -1,10 +1,10 @@
 import { createServerFn } from '@tanstack/react-start';
-import { JsonMemberRepository } from '#/server/member/member.repository.json';
+import { TursoMemberRepository } from '#/server/member/member.repository.turso';
 import { MemberService } from '#/server/member/member.service';
 import type { MemberInput } from '#/server/member/types';
 
 function getService() {
-  return new MemberService(new JsonMemberRepository());
+  return new MemberService(new TursoMemberRepository());
 }
 
 export const getMembers = createServerFn({ method: 'GET' }).handler(async () => {

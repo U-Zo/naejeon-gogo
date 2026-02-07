@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { BalanceCalculator } from '#/server/matchmaking/balance-calculator';
 import { MatchmakingService } from '#/server/matchmaking/matchmaking.service';
 import { PositionAssigner } from '#/server/matchmaking/position-assigner';
-import { JsonMemberRepository } from '#/server/member/member.repository.json';
+import { TursoMemberRepository } from '#/server/member/member.repository.turso';
 import { MemberService } from '#/server/member/member.service';
 
 function getService() {
@@ -10,7 +10,7 @@ function getService() {
 }
 
 function getMemberService() {
-  return new MemberService(new JsonMemberRepository());
+  return new MemberService(new TursoMemberRepository());
 }
 
 export const generateMatch = createServerFn({ method: 'POST' })
