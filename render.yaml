@@ -1,7 +1,7 @@
 services:
   - type: web
     runtime: docker
-    name: war
+    name: naejeon-gogo
     plan: free
     envVars:
       - key: TURSO_DATABASE_URL
