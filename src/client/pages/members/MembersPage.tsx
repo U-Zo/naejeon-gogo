@@ -298,7 +298,7 @@ function MemberForm({
     setError('');
 
     if (mode === 'create') {
-      onCreate({ name, mainPosition, subPositions, isTemporary });
+      onCreate({ name, mainPosition, subPositions, isTemporary, mmr });
     } else if (member) {
       onUpdate(member.id, { name, mainPosition, subPositions, isTemporary, mmr });
     }
@@ -368,18 +368,16 @@ function MemberForm({
           </div>
         </div>
 
-        {mode === 'edit' && (
-          <div className={common.fieldGroup}>
-            <label className={common.label}>MMR</label>
-            <input
-              className={common.input}
-              type="number"
-              value={mmr}
-              onChange={(e) => setMmr(Number(e.target.value))}
-              min={0}
-            />
-          </div>
-        )}
+        <div className={common.fieldGroup}>
+          <label className={common.label}>MMR</label>
+          <input
+            className={common.input}
+            type="number"
+            value={mmr}
+            onChange={(e) => setMmr(Number(e.target.value))}
+            min={0}
+          />
+        </div>
 
         <div className={common.fieldGroup}>
           <label className={styles.checkbox}>

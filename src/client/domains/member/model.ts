@@ -18,4 +18,5 @@ export type MemberInput = {
   mainPosition: Position;
   subPositions: Position[];
   isTemporary: boolean;
+  mmr?: number;
 };

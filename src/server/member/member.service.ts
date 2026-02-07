@@ -25,7 +25,7 @@ export class MemberService {
       name: input.name.trim(),
       mainPosition: input.mainPosition,
       subPositions: input.subPositions,
-      mmr: INITIAL_MMR,
+      mmr: input.mmr ?? INITIAL_MMR,
       isTemporary: input.isTemporary,
       createdAt: new Date().toISOString(),
       streak: null,
