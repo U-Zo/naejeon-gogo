@@ -1,14 +1,15 @@
 import { createClient } from '@libsql/client';
 
+const isProduction = process.env.NODE_ENV === 'production';
 const url = process.env.TURSO_DATABASE_URL;
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
-if (!url) {
+if (isProduction && !url) {
   throw new Error('TURSO_DATABASE_URL environment variable is required');
 }
 
 export const db = createClient({
-  url,
+  url: url ?? 'file:local.db',
   authToken,
 });
 
@@ -46,6 +47,16 @@ async function initDb(): Promise<void> {
       args: [],
     },
   ]);
+
+  // Migration: add status column to matches
+  try {
+    await db.execute({
+      sql: `ALTER TABLE matches ADD COLUMN status TEXT NOT NULL DEFAULT 'completed'`,
+      args: [],
+    });
+  } catch {
+    // Column already exists, ignore
+  }
 }
 
-export const dbReady = initDb();
+export const dbReady = isProduction ? initDb() : Promise.resolve();
