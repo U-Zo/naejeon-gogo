@@ -18,7 +18,7 @@ function writeData(members: Member[]): void {
 
 export class JsonMemberRepository implements IMemberRepository {
   async findAll(): Promise<Member[]> {
-    return readData();
+    return readData().sort((a, b) => a.name.localeCompare(b.name, 'ko'));
   }
 
   async findById(id: string): Promise<Member | null> {

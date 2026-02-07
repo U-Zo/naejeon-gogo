@@ -18,7 +18,7 @@ function rowToMember(row: Record<string, unknown>): Member {
 export class TursoMemberRepository implements IMemberRepository {
   async findAll(): Promise<Member[]> {
     await dbReady;
-    const result = await db.execute('SELECT * FROM members');
+    const result = await db.execute('SELECT * FROM members ORDER BY name ASC');
     return result.rows.map((row) => rowToMember(row as unknown as Record<string, unknown>));
   }
 
