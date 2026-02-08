@@ -1,3 +1,4 @@
+import { openConfirmDialog } from '#/client/components/ConfirmDialog';
 import { openErrorDialog } from '#/client/components/ErrorDialog';
 import { ShineBorder } from '#/client/components/ShineBorder';
 import type { Match, TeamSlot } from '#/client/domains/match';
@@ -22,6 +23,9 @@ export function HistoryPage() {
 
   const handleComplete = async (id: string, winner: 'A' | 'B') => {
     if (isCompleting) return;
+    const teamLabel = winner === 'A' ? '팀 A' : '팀 B';
+    const confirmed = await openConfirmDialog(`${teamLabel} 승리로 기록할까요?`);
+    if (!confirmed) return;
     try {
       await completeMatch({ id, winner });
     } catch (e) {
@@ -31,6 +35,8 @@ export function HistoryPage() {
 
   const handleCancel = async (id: string) => {
     if (isCanceling) return;
+    const confirmed = await openConfirmDialog('매치를 취소할까요?');
+    if (!confirmed) return;
     try {
       await cancelMatch(id);
     } catch (e) {
