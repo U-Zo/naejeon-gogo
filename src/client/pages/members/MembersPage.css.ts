@@ -8,6 +8,8 @@ export const memberList = style({
 });
 
 export const memberCard = style({
+  position: 'relative',
+  overflow: 'hidden',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',

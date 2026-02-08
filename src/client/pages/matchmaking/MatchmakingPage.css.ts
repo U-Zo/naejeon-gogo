@@ -17,6 +17,8 @@ export const memberGrid = style({
 });
 
 export const memberRow = style({
+  position: 'relative',
+  overflow: 'hidden',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

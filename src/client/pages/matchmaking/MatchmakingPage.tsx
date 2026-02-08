@@ -19,8 +19,32 @@ import { useGenerateMatch } from '#/client/domains/matchmaking';
 import type { Member } from '#/client/domains/member';
 import { filterMembersByName, useMembers } from '#/client/domains/member';
 import { POSITION_LABELS } from '#/client/domains/position';
+import { ShineBorder } from '#/client/components/ShineBorder';
 import * as styles from '#/client/pages/matchmaking/MatchmakingPage.css';
 import * as common from '#/client/styles/common.css';
+
+
+function getStreakShines(count: number) {
+  if (count >= 5) {
+    const d = 7;
+    return [
+      { duration: d, shineColor: ['#d84a10', '#cc30a0'], delay: 0 },
+      { duration: d, shineColor: ['#10a8c8', '#30b818'], delay: d / 3 },
+      { duration: d, shineColor: ['#c8a010', '#d84a10'], delay: (d * 2) / 3 },
+    ];
+  }
+  if (count === 4) {
+    const d = 8;
+    return [
+      { duration: d, shineColor: ['#d84a10', '#b83838'], delay: 0 },
+      { duration: d, shineColor: ['#c88030', '#d84a10'], delay: d / 2 },
+    ];
+  }
+  if (count === 3) {
+    return [{ duration: 10, shineColor: ['#b07850', '#a06858'], delay: 0 }];
+  }
+  return [{ duration: 12, shineColor: ['#6a5018', '#5a4828'], delay: 0 }];
+}
 
 type Phase = 'select' | 'candidates';
 
@@ -251,6 +275,11 @@ function SelectPhase({
               data-selected={selected}
               onClick={() => onToggle(member.id)}
             >
+              {member.streak?.type === 'win' &&
+                member.streak.count >= 2 &&
+                getStreakShines(member.streak.count).map((shine, i) => (
+                  <ShineBorder key={i} borderWidth={1} {...shine} />
+                ))}
               <div className={styles.memberRowInfo}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span className={styles.memberRowName}>{member.name}</span>

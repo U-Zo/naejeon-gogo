@@ -13,6 +13,7 @@ import {
 import type { Position } from '#/client/domains/position';
 import { POSITION_LABELS, POSITIONS } from '#/client/domains/position';
 import * as styles from '#/client/pages/members/MembersPage.css';
+import { ShineBorder } from '#/client/components/ShineBorder';
 import * as common from '#/client/styles/common.css';
 
 type FormMode = 'create' | 'edit';
@@ -193,6 +194,29 @@ function MemberStats({ members, matches }: { members: Member[]; matches: { id: s
   );
 }
 
+
+function getStreakShines(count: number) {
+  if (count >= 5) {
+    const d = 7;
+    return [
+      { duration: d, shineColor: ['#d84a10', '#cc30a0'], delay: 0 },
+      { duration: d, shineColor: ['#10a8c8', '#30b818'], delay: d / 3 },
+      { duration: d, shineColor: ['#c8a010', '#d84a10'], delay: (d * 2) / 3 },
+    ];
+  }
+  if (count === 4) {
+    const d = 8;
+    return [
+      { duration: d, shineColor: ['#d84a10', '#b83838'], delay: 0 },
+      { duration: d, shineColor: ['#c88030', '#d84a10'], delay: d / 2 },
+    ];
+  }
+  if (count === 3) {
+    return [{ duration: 10, shineColor: ['#b07850', '#a06858'], delay: 0 }];
+  }
+  return [{ duration: 12, shineColor: ['#6a5018', '#5a4828'], delay: 0 }];
+}
+
 function MemberCard({
   member,
   stats,
@@ -212,6 +236,11 @@ function MemberCard({
 
   return (
     <div className={styles.memberCard} onClick={onEdit}>
+      {member.streak?.type === 'win' &&
+        member.streak.count >= 2 &&
+        getStreakShines(member.streak.count).map((shine, i) => (
+          <ShineBorder key={i} borderWidth={1} {...shine} />
+        ))}
       <div className={styles.memberInfo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className={styles.memberName}>{member.name}</span>
