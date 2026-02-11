@@ -9,5 +9,5 @@ export const POSITION_LABELS: Record<Position, string> = {
   jungle: '정글',
   mid: '미드',
   adc: '원딜',
-  support: '서포터',
+  support: '서폿',
 };
