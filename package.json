@@ -17,7 +17,7 @@
     "@libsql/client": "^0.17.0",
     "@tanstack/react-query": "^5.90.20",
     "@tanstack/react-router": "^1.132.0",
-    "@tanstack/react-router-with-query": "^1.130.17",
+    "@tanstack/react-router-ssr-query": "^1.159.5",
     "@tanstack/react-start": "^1.132.0",
     "@vanilla-extract/css": "^1.18.0",
     "es-hangul": "^2.3.8",
