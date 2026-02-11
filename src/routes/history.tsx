@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { matchesQueryOptions } from '#/client/domains/match';
 import { membersQueryOptions } from '#/client/domains/member';
-import { HistoryPage } from '#/client/pages/history/HistoryPage';
+import { HistoryPage } from '#/client/pages/history/history-page';
 
 export const Route = createFileRoute('/history')({
   loader: ({ context: { queryClient } }) =>

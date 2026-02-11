@@ -1,5 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
-import { queryKeys } from '#/client/domains/_shared/queryKeys';
+import { queryKeys } from '#/client/domains/_shared/query-keys';
 import type { Member } from '#/client/domains/member/model';
 import { getMembers } from '#/server/member/member.controller';
 

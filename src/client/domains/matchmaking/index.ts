@@ -1,1 +1,1 @@
-export { useGenerateMatch } from '#/client/domains/matchmaking/useGenerateMatch';
+export { useGenerateMatch } from '#/client/domains/matchmaking/use-generate-match';

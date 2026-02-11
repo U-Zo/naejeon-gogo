@@ -1,6 +1,6 @@
 import { Link, useRouterState } from '@tanstack/react-router';
-import { AdminLoginButton } from '#/client/components/AdminAuth';
-import * as styles from '#/client/components/Layout.css';
+import { AdminLoginButton } from '#/client/components/admin-auth';
+import * as styles from '#/client/components/layout.css';
 
 function SwordsIcon() {
   return (

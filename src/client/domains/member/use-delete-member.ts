@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '#/client/domains/_shared/queryKeys';
+import { queryKeys } from '#/client/domains/_shared/query-keys';
 import { deleteMember } from '#/server/member/member.controller';
 
 export function useDeleteMember() {

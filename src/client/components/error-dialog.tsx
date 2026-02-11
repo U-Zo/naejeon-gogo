@@ -1,5 +1,5 @@
 import { overlay } from 'overlay-kit';
-import * as styles from '#/client/components/ErrorDialog.css';
+import * as styles from '#/client/components/error-dialog.css';
 import * as common from '#/client/styles/common.css';
 
 function ErrorDialogContent({

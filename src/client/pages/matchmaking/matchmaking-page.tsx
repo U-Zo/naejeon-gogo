@@ -12,15 +12,15 @@ import {
 } from '@dnd-kit/core';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useRef, useState } from 'react';
-import { openErrorDialog } from '#/client/components/ErrorDialog';
+import { openErrorDialog } from '#/client/components/error-dialog';
 import type { MatchCandidate, TeamSlot } from '#/client/domains/match';
 import { useCreateMatch } from '#/client/domains/match';
 import { useGenerateMatch } from '#/client/domains/matchmaking';
 import type { Member } from '#/client/domains/member';
 import { filterMembersByName, useMembers } from '#/client/domains/member';
 import { POSITION_LABELS } from '#/client/domains/position';
-import { ShineBorder } from '#/client/components/ShineBorder';
-import * as styles from '#/client/pages/matchmaking/MatchmakingPage.css';
+import { ShineBorder } from '#/client/components/shine-border';
+import * as styles from '#/client/pages/matchmaking/matchmaking-page.css';
 import * as common from '#/client/styles/common.css';
 
 

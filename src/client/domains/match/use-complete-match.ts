@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '#/client/domains/_shared/queryKeys';
+import { queryKeys } from '#/client/domains/_shared/query-keys';
 import type { TeamSide } from '#/client/domains/position/model';
 import { completeMatch } from '#/server/match/match.controller';
 

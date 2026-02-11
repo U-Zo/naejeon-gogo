@@ -1,12 +1,12 @@
-import { openConfirmDialog } from '#/client/components/ConfirmDialog';
-import { openErrorDialog } from '#/client/components/ErrorDialog';
-import { ShineBorder } from '#/client/components/ShineBorder';
+import { openConfirmDialog } from '#/client/components/confirm-dialog';
+import { openErrorDialog } from '#/client/components/error-dialog';
+import { ShineBorder } from '#/client/components/shine-border';
 import type { Match, TeamSlot } from '#/client/domains/match';
 import { useCancelMatch, useCompleteMatch, useMatches } from '#/client/domains/match';
 import type { Member } from '#/client/domains/member';
 import { useMembers } from '#/client/domains/member';
 import { POSITION_LABELS } from '#/client/domains/position';
-import * as styles from '#/client/pages/history/HistoryPage.css';
+import * as styles from '#/client/pages/history/history-page.css';
 import * as common from '#/client/styles/common.css';
 
 export function HistoryPage() {

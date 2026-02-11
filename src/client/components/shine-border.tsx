@@ -1,4 +1,4 @@
-import * as styles from './ShineBorder.css';
+import * as styles from './shine-border.css';
 
 interface ShineBorderProps {
   borderWidth?: number;

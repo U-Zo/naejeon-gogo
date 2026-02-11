@@ -12,8 +12,8 @@ import {
 } from '#/client/domains/member';
 import type { Position } from '#/client/domains/position';
 import { POSITION_LABELS, POSITIONS } from '#/client/domains/position';
-import * as styles from '#/client/pages/members/MembersPage.css';
-import { ShineBorder } from '#/client/components/ShineBorder';
+import * as styles from '#/client/pages/members/members-page.css';
+import { ShineBorder } from '#/client/components/shine-border';
 import * as common from '#/client/styles/common.css';
 
 type FormMode = 'create' | 'edit';

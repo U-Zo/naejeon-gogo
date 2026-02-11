@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '#/client/domains/_shared/queryKeys';
+import { queryKeys } from '#/client/domains/_shared/query-keys';
 import type { MemberInput } from '#/client/domains/member/model';
 import { createMember } from '#/server/member/member.controller';
 
