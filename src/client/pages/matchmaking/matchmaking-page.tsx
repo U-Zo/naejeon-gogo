@@ -1,30 +1,33 @@
 import {
   DndContext,
+  type DragEndEvent,
   DragOverlay,
-  PointerSensor,
+  type DragStartEvent,
   KeyboardSensor,
-  useSensor,
-  useSensors,
+  PointerSensor,
   useDraggable,
   useDroppable,
-  type DragStartEvent,
-  type DragEndEvent,
+  useSensor,
+  useSensors,
 } from '@dnd-kit/core';
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useRef, useState } from 'react';
 import { openErrorDialog } from '#/client/components/error-dialog';
+import { type MatchMethod, SelectPhase } from '#/client/components/select-phase';
+import { TeamMatchCard } from '#/client/components/team-match-card';
+import * as cardStyles from '#/client/components/team-match-card.css';
 import type { MatchCandidate, TeamSlot } from '#/client/domains/match';
 import { useCreateMatch } from '#/client/domains/match';
 import { useGenerateMatch } from '#/client/domains/matchmaking';
 import type { Member } from '#/client/domains/member';
 import { useMembers } from '#/client/domains/member';
 import { POSITION_LABELS } from '#/client/domains/position';
-import { SelectPhase } from '#/client/components/select-phase';
 import * as styles from '#/client/pages/matchmaking/matchmaking-page.css';
+import { RaceCanvas } from '#/client/pages/race/components/race-canvas';
+import type { RaceResult } from '#/client/pages/race/engine/types';
 import * as common from '#/client/styles/common.css';
 
-
-type Phase = 'select' | 'candidates';
+type Phase = 'select' | 'race' | 'candidates';
 
 type SlotId = {
   candidateIndex: number;
@@ -72,7 +75,6 @@ function deepCloneCandidates(candidates: MatchCandidate[]): MatchCandidate[] {
     teamB: c.teamB.map((s) => ({ ...s })),
   }));
 }
-
 export function MatchmakingPage() {
   const { data: members } = useMembers();
   const { execute: generateMatch, isPending: isGenerating } = useGenerateMatch();
@@ -80,12 +82,19 @@ export function MatchmakingPage() {
   const navigate = useNavigate();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [method, setMethod] = useState<MatchMethod>('algorithm');
   const [originalCandidates, setOriginalCandidates] = useState<MatchCandidate[]>([]);
   const [editedCandidates, setEditedCandidates] = useState<MatchCandidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState(0);
   const [phase, setPhase] = useState<Phase>('select');
+  const [raceKey, setRaceKey] = useState(0);
 
   const memberMap = new Map(members.map((m) => [m.id, m]));
+
+  const selectedMembers = [...selectedIds]
+    .map((id) => memberMap.get(id))
+    .filter((m): m is NonNullable<typeof m> => m != null)
+    .map((m) => ({ id: m.id, name: m.name }));
 
   const toggleMember = (id: string) => {
     setSelectedIds((prev) => {
@@ -99,22 +108,53 @@ export function MatchmakingPage() {
     });
   };
 
-  const handleGenerate = async () => {
-    if (isGenerating) return;
+  const raceResultsToCandidates = useCallback(
+    (results: RaceResult[]): MatchCandidate[] => {
+      const toSlot = (r: RaceResult) => {
+        const member = memberMap.get(r.memberId);
+        return { memberId: r.memberId, position: member?.mainPosition ?? ('mid' as const) };
+      };
+      const teamA = results.filter((r) => r.finishOrder % 2 === 1).map(toSlot);
+      const teamB = results.filter((r) => r.finishOrder % 2 === 0).map(toSlot);
+      const teamATotal = teamA.reduce((sum, s) => sum + (memberMap.get(s.memberId)?.mmr ?? 0), 0);
+      const teamBTotal = teamB.reduce((sum, s) => sum + (memberMap.get(s.memberId)?.mmr ?? 0), 0);
+      return [{ teamA, teamB, teamATotal, teamBTotal, mmrDiff: Math.abs(teamATotal - teamBTotal) }];
+    }, [memberMap],
+  );
+
+  const handleSubmit = async () => {
     if (selectedIds.size !== 10) {
       openErrorDialog(`참가자 10명을 선택해주세요.\n(현재 ${selectedIds.size}명)`);
       return;
     }
-    try {
-      const result = await generateMatch([...selectedIds]);
-      setOriginalCandidates(result);
-      setEditedCandidates(deepCloneCandidates(result));
-      setSelectedCandidate(0);
-      setPhase('candidates');
-    } catch (e) {
-      openErrorDialog(e instanceof Error ? e.message : '매칭 생성에 실패했습니다.');
+
+    if (method === 'roulette') {
+      setRaceKey((k) => k + 1);
+      setPhase('race');
+    } else {
+      if (isGenerating) return;
+      try {
+        const result = await generateMatch([...selectedIds]);
+        setOriginalCandidates(result);
+        setEditedCandidates(deepCloneCandidates(result));
+        setSelectedCandidate(0);
+        setPhase('candidates');
+      } catch (e) {
+        openErrorDialog(e instanceof Error ? e.message : '매칭 생성에 실패했습니다.');
+      }
     }
   };
+
+  const handleRaceComplete = useCallback(
+    (results: RaceResult[]) => {
+      const candidates = raceResultsToCandidates(results);
+      setOriginalCandidates(candidates);
+      setEditedCandidates(deepCloneCandidates(candidates));
+      setSelectedCandidate(0);
+      setPhase('candidates');
+    },
+    [raceResultsToCandidates],
+  );
 
   const handleConfirm = async () => {
     if (isCreating) return;
@@ -129,14 +169,19 @@ export function MatchmakingPage() {
   };
 
   const handleReroll = async () => {
-    if (isGenerating) return;
-    try {
-      const result = await generateMatch([...selectedIds]);
-      setOriginalCandidates(result);
-      setEditedCandidates(deepCloneCandidates(result));
-      setSelectedCandidate(0);
-    } catch (e) {
-      openErrorDialog(e instanceof Error ? e.message : '매칭 생성에 실패했습니다.');
+    if (method === 'roulette') {
+      setRaceKey((k) => k + 1);
+      setPhase('race');
+    } else {
+      if (isGenerating) return;
+      try {
+        const result = await generateMatch([...selectedIds]);
+        setOriginalCandidates(result);
+        setEditedCandidates(deepCloneCandidates(result));
+        setSelectedCandidate(0);
+      } catch (e) {
+        openErrorDialog(e instanceof Error ? e.message : '매칭 생성에 실패했습니다.');
+      }
     }
   };
 
@@ -160,7 +205,6 @@ export function MatchmakingPage() {
         if (!fromSlot || !toSlot) return prev;
 
         if (from.team === to.team) {
-          // Same team: swap member + position
           const tempMemberId = fromSlot.memberId;
           const tempPosition = fromSlot.position;
           fromSlot.memberId = toSlot.memberId;
@@ -168,7 +212,6 @@ export function MatchmakingPage() {
           toSlot.memberId = tempMemberId;
           toSlot.position = tempPosition;
         } else {
-          // Cross team: swap members only (keep positions)
           const tempMemberId = fromSlot.memberId;
           fromSlot.memberId = toSlot.memberId;
           toSlot.memberId = tempMemberId;
@@ -190,10 +233,20 @@ export function MatchmakingPage() {
           members={members}
           selectedIds={selectedIds}
           onToggle={toggleMember}
-          onSubmit={handleGenerate}
+          onSubmit={handleSubmit}
           submitLabel="매칭 시작"
           loadingLabel="매칭 중..."
           loading={isGenerating}
+          method={method}
+          onMethodChange={setMethod}
+        />
+      )}
+
+      {phase === 'race' && (
+        <RaceCanvas
+          key={raceKey}
+          members={selectedMembers}
+          onComplete={handleRaceComplete}
         />
       )}
 
@@ -209,6 +262,8 @@ export function MatchmakingPage() {
           onBack={handleBack}
           onSwapSlots={handleSwapSlots}
           loading={isGenerating || isCreating}
+          rerollLabel={method === 'roulette' ? '다시 룰렛' : '리롤'}
+          rerollLoadingLabel={method === 'roulette' ? undefined : '리롤 중...'}
         />
       )}
     </>
@@ -241,12 +296,12 @@ function DraggableSlot({
         setDragRef(node);
         setDropRef(node);
       }}
-      className={`${isRight ? styles.memberSlotRight : styles.memberSlot} ${styles.draggableSlot} ${isDragging ? styles.draggableSlotDragging : ''} ${highlighted ? styles.droppableSlotOver : ''}`}
+      className={`${isRight ? cardStyles.memberSlotRight : cardStyles.memberSlot} ${styles.draggableSlot} ${isDragging ? styles.draggableSlotDragging : ''} ${highlighted ? styles.droppableSlotOver : ''}`}
       {...attributes}
       {...listeners}
     >
-      <span className={styles.positionTag}>{POSITION_LABELS[slot.position]}</span>
-      <span className={styles.memberName}>{member?.name ?? '???'}</span>
+      <span className={cardStyles.positionTag}>{POSITION_LABELS[slot.position]}</span>
+      <span className={cardStyles.memberName}>{member?.name ?? '???'}</span>
     </div>
   );
 }
@@ -312,75 +367,56 @@ function CandidateCard({
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div
-        className={styles.candidateCard}
-        data-selected={isSelected}
-        onClick={handleCardClick}
-      >
-        <div className={styles.candidateHeader}>
-          <span className={styles.candidateIndex}>
+      <TeamMatchCard
+        teamA={candidate.teamA}
+        teamB={candidate.teamB}
+        memberMap={memberMap}
+        teamATotal={candidate.teamATotal}
+        teamBTotal={candidate.teamBTotal}
+        mmrDiff={candidate.mmrDiff}
+        header={
+          <>
             후보 {candidateIndex + 1}
             {modified && <span className={styles.modifiedBadge} style={{ marginLeft: '8px' }}>수정됨</span>}
-          </span>
-          <span className={styles.mmrDiffBadge}>MMR 차이: {candidate.mmrDiff}</span>
-        </div>
-
-        <div className={styles.matchTeams}>
-          <div className={styles.teamColumn}>
-            <span className={styles.teamLabelA}>
-              팀 A <span className={styles.teamMmr}>{candidate.teamATotal}</span>
-            </span>
-            <div className={styles.teamMembers}>
-              {candidate.teamA.map((slot, slotIdx) => {
-                const slotId = encodeSlotId({ candidateIndex, team: 'A', slotIndex: slotIdx });
-                return (
-                  <DraggableSlot
-                    key={slotId}
-                    id={slotId}
-                    slot={slot}
-                    memberMap={memberMap}
-                    isRight={false}
-                    isDragging={activeId === slotId}
-                    isOver={false}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
-          <div className={styles.vsColumn}>
-            <span className={styles.vsLabel}>VS</span>
-          </div>
-
-          <div className={styles.teamColumn}>
-            <span className={styles.teamLabelB}>
-              <span className={styles.teamMmr}>{candidate.teamBTotal}</span> 팀 B
-            </span>
-            <div className={styles.teamMembers}>
-              {candidate.teamB.map((slot, slotIdx) => {
-                const slotId = encodeSlotId({ candidateIndex, team: 'B', slotIndex: slotIdx });
-                return (
-                  <DraggableSlot
-                    key={slotId}
-                    id={slotId}
-                    slot={slot}
-                    memberMap={memberMap}
-                    isRight={true}
-                    isDragging={activeId === slotId}
-                    isOver={false}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+        selected={isSelected}
+        onClick={handleCardClick}
+        renderSlotA={(slot, slotIdx) => {
+          const slotId = encodeSlotId({ candidateIndex, team: 'A', slotIndex: slotIdx });
+          return (
+            <DraggableSlot
+              key={slotId}
+              id={slotId}
+              slot={slot}
+              memberMap={memberMap}
+              isRight={false}
+              isDragging={activeId === slotId}
+              isOver={false}
+            />
+          );
+        }}
+        renderSlotB={(slot, slotIdx) => {
+          const slotId = encodeSlotId({ candidateIndex, team: 'B', slotIndex: slotIdx });
+          return (
+            <DraggableSlot
+              key={slotId}
+              id={slotId}
+              slot={slot}
+              memberMap={memberMap}
+              isRight={true}
+              isDragging={activeId === slotId}
+              isOver={false}
+            />
+          );
+        }}
+      />
 
       <DragOverlay>
         {activeSlot && (
           <div className={styles.dragOverlay}>
-            <span className={styles.positionTag}>{POSITION_LABELS[activeSlot.position]}</span>
-            <span className={styles.memberName}>{activeMember?.name ?? '???'}</span>
+            <span className={cardStyles.positionTag}>{POSITION_LABELS[activeSlot.position]}</span>
+            <span className={cardStyles.memberName}>{activeMember?.name ?? '???'}</span>
           </div>
         )}
       </DragOverlay>
@@ -399,6 +435,8 @@ function CandidatesPhase({
   onBack,
   onSwapSlots,
   loading,
+  rerollLabel = '리롤',
+  rerollLoadingLabel = '리롤 중...',
 }: {
   originalCandidates: MatchCandidate[];
   editedCandidates: MatchCandidate[];
@@ -410,6 +448,8 @@ function CandidatesPhase({
   onBack: () => void;
   onSwapSlots: (from: SlotId, to: SlotId) => void;
   loading: boolean;
+  rerollLabel?: string;
+  rerollLoadingLabel?: string;
 }) {
   return (
     <div className={styles.section}>
@@ -440,7 +480,7 @@ function CandidatesPhase({
           disabled={loading}
           onClick={onReroll}
         >
-          {loading ? '리롤 중...' : '리롤'}
+          {loading && rerollLoadingLabel ? rerollLoadingLabel : rerollLabel}
         </button>
         <button
           className={common.buttonPrimary}

@@ -7,6 +7,7 @@ export type Racer = {
   finishOrder: number | null;
   finishTime: number | null;
   forceAngle: number;
+  stuckTime: number;
 };
 
 export type RaceConfig = {

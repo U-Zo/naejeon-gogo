@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { ShineBorder } from '#/client/components/shine-border';
 import type { Member } from '#/client/domains/member';
 import { filterMembersByName } from '#/client/domains/member';
 import { POSITION_LABELS } from '#/client/domains/position';
-import { ShineBorder } from '#/client/components/shine-border';
 import * as styles from '#/client/pages/matchmaking/matchmaking-page.css';
 import * as common from '#/client/styles/common.css';
 
@@ -28,6 +28,8 @@ function getStreakShines(count: number) {
   return [{ duration: 12, shineColor: ['#6a5018', '#5a4828'], delay: 0 }];
 }
 
+export type MatchMethod = 'algorithm' | 'roulette';
+
 type SelectPhaseProps = {
   members: Member[];
   selectedIds: Set<string>;
@@ -37,6 +39,8 @@ type SelectPhaseProps = {
   loadingLabel?: string;
   loading?: boolean;
   disabled?: boolean;
+  method?: MatchMethod;
+  onMethodChange?: (method: MatchMethod) => void;
 };
 
 export function SelectPhase({
@@ -48,12 +52,33 @@ export function SelectPhase({
   loadingLabel,
   loading = false,
   disabled = false,
+  method,
+  onMethodChange,
 }: SelectPhaseProps) {
   const [search, setSearch] = useState('');
   const filtered = filterMembersByName(members, search);
 
   return (
     <div className={styles.section}>
+      {method != null && onMethodChange != null && (
+        <div className={styles.methodToggle}>
+          <div
+            className={styles.methodOption}
+            data-active={method === 'algorithm'}
+            onClick={() => onMethodChange('algorithm')}
+          >
+            자동
+          </div>
+          <div
+            className={styles.methodOption}
+            data-active={method === 'roulette'}
+            onClick={() => onMethodChange('roulette')}
+          >
+            룰렛 (Beta)
+          </div>
+        </div>
+      )}
+
       <p className={styles.selectionCount}>
         참가자 선택: <span className={styles.selectionCountHighlight}>{selectedIds.size}</span>
         /10
