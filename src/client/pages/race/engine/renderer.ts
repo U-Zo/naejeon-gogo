@@ -25,6 +25,7 @@ export class Renderer {
     obstacles: readonly Obstacle[],
     trackLength: number,
     trackWidth: number,
+    rankings: { name: string; rank: number; finished: boolean; colorIndex: number; team: 'A' | 'B' }[] = [],
   ): void {
     const width = this.width;
     const height = this.height;
@@ -41,6 +42,10 @@ export class Renderer {
     this.drawRacers(racers);
 
     camera.restoreTransform(ctx);
+
+    if (rankings.length > 0) {
+      this.drawRankings(rankings);
+    }
   }
 
   private drawTrack(trackLength: number, trackWidth: number): void {
@@ -220,6 +225,62 @@ export class Renderer {
       ctx.fillText(racer.name, x, y + radius + 4);
 
       ctx.globalAlpha = 1;
+    }
+  }
+
+  drawRankings(rankings: { name: string; rank: number; finished: boolean; colorIndex: number; team: 'A' | 'B' }[]): void {
+    const ctx = this.ctx;
+    const padding = 10;
+    const lineHeight = 20;
+    const boxWidth = 130;
+    const boxHeight = padding * 2 + rankings.length * lineHeight;
+    const x = this.width - boxWidth - padding;
+    const y = padding;
+
+    ctx.fillStyle = 'rgba(10, 20, 40, 0.8)';
+    ctx.beginPath();
+    ctx.roundRect(x, y, boxWidth, boxHeight, 6);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    const TEAM_A_COLOR = '#4a90d9';
+    const TEAM_B_COLOR = '#d94a4a';
+
+    for (let i = 0; i < rankings.length; i++) {
+      const r = rankings[i];
+      const rowY = y + padding + i * lineHeight + lineHeight * 0.7;
+
+      // rank number
+      ctx.fillStyle = r.finished ? '#ffd700' : 'rgba(255, 255, 255, 0.5)';
+      ctx.font = 'bold 12px monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText(`${r.rank}`, x + 24, rowY);
+
+      // color dot
+      const color = RACER_COLORS[r.colorIndex % RACER_COLORS.length];
+      ctx.beginPath();
+      ctx.arc(x + 32, rowY - 4, 4, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      // name
+      ctx.fillStyle = r.finished ? '#f0e6d2' : 'rgba(255, 255, 255, 0.6)';
+      ctx.font = r.finished ? 'bold 11px sans-serif' : '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(r.name, x + 42, rowY);
+
+      // team badge (only after finishing)
+      if (r.finished) {
+        const teamColor = r.team === 'A' ? TEAM_A_COLOR : TEAM_B_COLOR;
+        ctx.fillStyle = teamColor;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(r.team, x + boxWidth - 6, rowY);
+      }
     }
   }
 

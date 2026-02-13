@@ -59,23 +59,27 @@ The system SHALL implement a virtual camera that renders the race on a Canvas el
 - **WHEN** only 2-3 racers remain unfinished
 - **THEN** the camera is zoomed in closely on those racers, creating tension for the final team assignment
 
-### Requirement: Finish order tracking
-The system SHALL track the order in which racers cross the finish line. Each racer's finishing position SHALL be displayed as they complete the race.
+### Requirement: Real-time ranking overlay
+The system SHALL display a real-time ranking list on the canvas (top-right corner) showing all racers sorted by their current progress along the track. The ranking SHALL update every frame as part of the canvas render cycle.
+
+#### Scenario: Ranking display during race
+- **WHEN** the race simulation is running
+- **THEN** the canvas renders a ranking overlay showing each racer's current position (rank number, color dot, name) sorted by distance traveled
 
 #### Scenario: Racer crosses finish line
 - **WHEN** a racer's body crosses the finish line boundary
-- **THEN** the system records their finishing position (1st, 2nd, ..., 10th) and displays it
+- **THEN** the system records their finishing position (1st, 2nd, ..., 10th), highlights the rank in gold, and displays their assigned team badge (A or B in team color) next to the name
 
 #### Scenario: All racers finish
 - **WHEN** all 10 racers have crossed the finish line
 - **THEN** the system transitions to the result phase
 
 ### Requirement: Team assignment from race result
-The system SHALL assign teams based on finishing order: positions 1-5 to Team A, positions 6-10 to Team B. The assignment is purely based on the physics simulation result with no balance consideration.
+The system SHALL assign teams based on finishing order: odd positions (1st, 3rd, 5th, 7th, 9th) to Team A, even positions (2nd, 4th, 6th, 8th, 10th) to Team B. The assignment is purely based on the physics simulation result with no balance consideration.
 
 #### Scenario: Teams assigned after race
 - **WHEN** all racers have finished and the result phase is shown
-- **THEN** the system displays Team A (1st-5th place) and Team B (6th-10th place) with member names
+- **THEN** the system displays Team A (odd-placed: 1st, 3rd, 5th, 7th, 9th) and Team B (even-placed: 2nd, 4th, 6th, 8th, 10th) with member names
 
 ### Requirement: Match confirmation from race result
 The system SHALL allow users to confirm the race result as an official match using the existing match creation API. Users SHALL also be able to re-run the race or go back to member selection.

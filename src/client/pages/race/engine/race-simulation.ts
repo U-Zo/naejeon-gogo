@@ -82,6 +82,7 @@ export class RaceSimulation {
         finishOrder: null,
         finishTime: null,
         forceAngle: Math.PI / 2 + (Math.random() - 0.5) * 0.5,
+        stuckTime: 0,
       });
     }
   }
@@ -174,7 +175,7 @@ export class RaceSimulation {
     this.elapsedTime += delta;
     Matter.Engine.update(this.engine, delta);
 
-    this.unstuckRacers();
+    this.unstuckRacers(delta);
 
     if (this.elapsedTime - this.lastForceTime >= this.config.forceInterval) {
       this.applyRandomForces();
@@ -210,14 +211,41 @@ export class RaceSimulation {
     }
   }
 
-  private unstuckRacers() {
+  private unstuckRacers(delta: number) {
     for (const racer of this.racers) {
       if (racer.finishOrder !== null) continue;
 
       const speed = Matter.Vector.magnitude(racer.body.velocity);
 
       if (speed < 0.5) {
-        const angle = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+        racer.stuckTime += delta;
+      } else {
+        racer.stuckTime = 0;
+        continue;
+      }
+
+      // Graduated response: the longer stuck, the harder the blast
+      const angle = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+
+      if (racer.stuckTime > 800) {
+        // Severely stuck: teleport slightly + explosive velocity
+        Matter.Body.translate(racer.body, {
+          x: (Math.random() - 0.5) * 30,
+          y: 15 + Math.random() * 15,
+        });
+        Matter.Body.setVelocity(racer.body, {
+          x: Math.cos(angle) * 30,
+          y: Math.sin(angle) * 30,
+        });
+        racer.stuckTime = 0;
+      } else if (racer.stuckTime > 400) {
+        // Moderately stuck: strong push
+        Matter.Body.setVelocity(racer.body, {
+          x: Math.cos(angle) * 20,
+          y: Math.sin(angle) * 20,
+        });
+      } else if (racer.stuckTime > 100) {
+        // Lightly stuck: gentle nudge
         Matter.Body.setVelocity(racer.body, {
           x: Math.cos(angle) * 12,
           y: Math.sin(angle) * 12,
@@ -269,6 +297,22 @@ export class RaceSimulation {
     return this.racers
       .filter((r): r is Racer & { finishOrder: number } => r.finishOrder !== null)
       .sort((a, b) => a.finishOrder - b.finishOrder);
+  }
+
+  getRankings(): { name: string; rank: number; finished: boolean; colorIndex: number; team: 'A' | 'B' }[] {
+    const sorted = [...this.racers].sort((a, b) => {
+      if (a.finishOrder !== null && b.finishOrder !== null) return a.finishOrder - b.finishOrder;
+      if (a.finishOrder !== null) return -1;
+      if (b.finishOrder !== null) return 1;
+      return b.body.position.y - a.body.position.y;
+    });
+    return sorted.map((r, i) => ({
+      name: r.name,
+      rank: i + 1,
+      finished: r.finishOrder !== null,
+      colorIndex: this.racers.indexOf(r),
+      team: (i + 1) % 2 === 1 ? 'A' as const : 'B' as const,
+    }));
   }
 
   getResults(): RaceResult[] {

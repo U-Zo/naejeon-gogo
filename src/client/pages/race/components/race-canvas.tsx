@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import * as styles from '../race-page.css';
+import * as styles from '../race-canvas.css';
 import { Camera } from '../engine/camera';
 import { RaceSimulation } from '../engine/race-simulation';
 import { Renderer } from '../engine/renderer';
@@ -20,7 +20,6 @@ export function RaceCanvas({ members, onComplete }: RaceCanvasProps) {
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
-  const [finishedRacers, setFinishedRacers] = useState<{ name: string; order: number }[]>([]);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const startSimulation = useCallback(() => {
@@ -56,10 +55,8 @@ export function RaceCanvas({ members, onComplete }: RaceCanvasProps) {
         renderer.height,
       );
 
-      renderer.render(camera, sim.getRacers(), sim.getObstacles(), sim.getTrackLength(), sim.getTrackWidth());
+      renderer.render(camera, sim.getRacers(), sim.getObstacles(), sim.getTrackLength(), sim.getTrackWidth(), sim.getRankings());
 
-      const finished = sim.getFinishedRacers();
-      setFinishedRacers(finished.map((r) => ({ name: r.name, order: r.finishOrder ?? 0 })));
       setElapsedSeconds(Math.floor(sim.elapsed / 1000));
 
       if (sim.isComplete) {
@@ -99,16 +96,7 @@ export function RaceCanvas({ members, onComplete }: RaceCanvasProps) {
         {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
       </div>
 
-      {finishedRacers.length > 0 && (
-        <div className={styles.finishList}>
-          {finishedRacers.map((r) => (
-            <div key={r.order} className={styles.finishItem}>
-              <span className={styles.finishOrder}>{r.order}</span>
-              <span>{r.name}</span>
-            </div>
-          ))}
-        </div>
-      )}
+
     </div>
   );
 }
