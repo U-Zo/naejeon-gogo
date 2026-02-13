@@ -23,7 +23,7 @@ import type { Member } from '#/client/domains/member';
 import { useMembers } from '#/client/domains/member';
 import { POSITION_LABELS } from '#/client/domains/position';
 import * as styles from '#/client/pages/matchmaking/matchmaking-page.css';
-import { RaceCanvas } from '#/client/pages/race/components/race-canvas';
+import { RaceCanvas, type RaceCanvasHandle } from '#/client/pages/race/components/race-canvas';
 import type { RaceResult } from '#/client/pages/race/engine/types';
 import * as common from '#/client/styles/common.css';
 
@@ -88,6 +88,7 @@ export function MatchmakingPage() {
   const [selectedCandidate, setSelectedCandidate] = useState(0);
   const [phase, setPhase] = useState<Phase>('select');
   const [raceKey, setRaceKey] = useState(0);
+  const raceCanvasRef = useRef<RaceCanvasHandle>(null);
 
   const memberMap = new Map(members.map((m) => [m.id, m]));
 
@@ -243,11 +244,20 @@ export function MatchmakingPage() {
       )}
 
       {phase === 'race' && (
-        <RaceCanvas
-          key={raceKey}
-          members={selectedMembers}
-          onComplete={handleRaceComplete}
-        />
+        <>
+          <RaceCanvas
+            ref={raceCanvasRef}
+            key={raceKey}
+            members={selectedMembers}
+            onComplete={handleRaceComplete}
+          />
+          <button
+            className={`${common.buttonPrimary} ${styles.forceFinishButton}`}
+            onClick={() => raceCanvasRef.current?.forceFinish()}
+          >
+            즉시 종료
+          </button>
+        </>
       )}
 
       {phase === 'candidates' && (

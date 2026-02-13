@@ -1,16 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState, forwardRef } from 'react';
 import * as styles from '../race-canvas.css';
 import { Camera } from '../engine/camera';
 import { RaceSimulation } from '../engine/race-simulation';
 import { Renderer } from '../engine/renderer';
 import type { RaceResult } from '../engine/types';
 
+export type RaceCanvasHandle = {
+  forceFinish: () => void;
+};
+
 type RaceCanvasProps = {
   members: { id: string; name: string }[];
   onComplete: (results: RaceResult[]) => void;
 };
 
-export function RaceCanvas({ members, onComplete }: RaceCanvasProps) {
+export const RaceCanvas = forwardRef<RaceCanvasHandle, RaceCanvasProps>(function RaceCanvas({ members, onComplete }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const simRef = useRef<RaceSimulation | null>(null);
   const cameraRef = useRef<Camera | null>(null);
@@ -21,6 +25,11 @@ export function RaceCanvas({ members, onComplete }: RaceCanvasProps) {
   onCompleteRef.current = onComplete;
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const forceFinishRef = useRef(false);
+
+  useImperativeHandle(ref, () => ({
+    forceFinish: () => { forceFinishRef.current = true; },
+  }));
 
   const startSimulation = useCallback(() => {
     const canvas = canvasRef.current;
@@ -64,6 +73,13 @@ export function RaceCanvas({ members, onComplete }: RaceCanvasProps) {
         return;
       }
 
+      if (forceFinishRef.current) {
+        forceFinishRef.current = false;
+        sim.forceFinish();
+        onCompleteRef.current(sim.getResults());
+        return;
+      }
+
       rafRef.current = requestAnimationFrame(loop);
     };
 
@@ -99,4 +115,4 @@ export function RaceCanvas({ members, onComplete }: RaceCanvasProps) {
 
     </div>
   );
-}
+});

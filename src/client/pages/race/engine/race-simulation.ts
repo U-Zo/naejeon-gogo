@@ -283,6 +283,22 @@ export class RaceSimulation {
     return this._isComplete;
   }
 
+  forceFinish(): void {
+    // 아직 골인하지 않은 레이서들을 현재 y 위치 순으로 골인 처리
+    const unfinished = this.racers
+      .filter((r) => r.finishOrder === null)
+      .sort((a, b) => b.body.position.y - a.body.position.y);
+
+    for (const racer of unfinished) {
+      this.finishCount++;
+      racer.finishOrder = this.finishCount;
+      racer.finishTime = this.elapsedTime;
+      Matter.Composite.remove(this.engine.world, racer.body);
+    }
+
+    this._isComplete = true;
+  }
+
   get elapsed(): number {
     return this.elapsedTime;
   }

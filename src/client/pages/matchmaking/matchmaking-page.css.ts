@@ -123,6 +123,12 @@ export const actionBar = style({
   marginTop: vars.space.lg,
 });
 
+export const forceFinishButton = style({
+  width: '100%',
+  marginTop: vars.space.md,
+});
+
+
 // --- Drag and Drop styles ---
 
 export const draggableSlot = style({

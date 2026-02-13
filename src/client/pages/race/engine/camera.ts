@@ -20,7 +20,7 @@ export class Camera {
 
     // Sort by y descending (leading = largest y = closest to finish)
     const sorted = [...activeRacers].sort((a, b) => b.body.position.y - a.body.position.y);
-    const leadCount = Math.min(Math.max(3, Math.ceil(sorted.length * 0.4)), sorted.length);
+    const leadCount = Math.min(Math.max(2, Math.ceil(sorted.length * 0.3)), sorted.length);
     const leaders = sorted.slice(0, leadCount);
 
     const padding = 200;
