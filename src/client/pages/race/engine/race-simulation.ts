@@ -228,7 +228,7 @@ export class RaceSimulation {
       // 위쪽 + 좌우 랜덤으로 팅김 (-π/2 = 위, ±0.8 = 좌우 흔들림)
       const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.8;
 
-      if (racer.stuckTime > 800) {
+      if (racer.stuckTime > 4000) {
         // Severely stuck: teleport slightly + explosive velocity
         Matter.Body.translate(racer.body, {
           x: (Math.random() - 0.5) * 30,
@@ -239,13 +239,13 @@ export class RaceSimulation {
           y: Math.sin(angle) * 30,
         });
         racer.stuckTime = 0;
-      } else if (racer.stuckTime > 400) {
+      } else if (racer.stuckTime > 2500) {
         // Moderately stuck: strong push
         Matter.Body.setVelocity(racer.body, {
           x: Math.cos(angle) * 20,
           y: Math.sin(angle) * 20,
         });
-      } else if (racer.stuckTime > 100) {
+      } else if (racer.stuckTime > 1500) {
         // Lightly stuck: gentle nudge
         Matter.Body.setVelocity(racer.body, {
           x: Math.cos(angle) * 12,
