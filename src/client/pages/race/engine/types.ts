@@ -42,7 +42,7 @@ export const DEFAULT_RACE_CONFIG: RaceConfig = {
   forceMax: 0.002,
   forceInterval: 1000,
   frictionAir: 0.001,
-  boostForce: 0.02,
+  boostForce: 0.015,
   maxDuration: 45_000,
   minFirstFinish: 15_000,
 };

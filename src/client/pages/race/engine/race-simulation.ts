@@ -69,7 +69,7 @@ export class RaceSimulation {
 
       // Shotgun blast: setVelocity for instant scatter, ±60° wide angle
       const angle = Math.PI / 2 + (Math.random() - 0.5) * (Math.PI * 2 / 3);
-      const speed = 8 + Math.random() * 12;
+      const speed = 4 + Math.random() * 6;
       Matter.Body.setVelocity(body, {
         x: Math.cos(angle) * speed,
         y: Math.sin(angle) * speed,
@@ -215,9 +215,10 @@ export class RaceSimulation {
     for (const racer of this.racers) {
       if (racer.finishOrder !== null) continue;
 
-      const speed = Matter.Vector.magnitude(racer.body.velocity);
+      const vx = Math.abs(racer.body.velocity.x);
+      const vy = Math.abs(racer.body.velocity.y);
 
-      if (speed < 0.5) {
+      if (vx < 0.5 && vy < 0.5) {
         racer.stuckTime += delta;
       } else {
         racer.stuckTime = 0;
@@ -235,21 +236,21 @@ export class RaceSimulation {
           y: -(15 + Math.random() * 15),
         });
         Matter.Body.setVelocity(racer.body, {
-          x: Math.cos(angle) * 30,
-          y: Math.sin(angle) * 30,
+          x: Math.cos(angle) * 18,
+          y: Math.sin(angle) * 18,
         });
         racer.stuckTime = 0;
       } else if (racer.stuckTime > 2500) {
         // Moderately stuck: strong push
         Matter.Body.setVelocity(racer.body, {
-          x: Math.cos(angle) * 20,
-          y: Math.sin(angle) * 20,
+          x: Math.cos(angle) * 12,
+          y: Math.sin(angle) * 12,
         });
       } else if (racer.stuckTime > 1500) {
         // Lightly stuck: gentle nudge
         Matter.Body.setVelocity(racer.body, {
-          x: Math.cos(angle) * 12,
-          y: Math.sin(angle) * 12,
+          x: Math.cos(angle) * 8,
+          y: Math.sin(angle) * 8,
         });
       }
     }
