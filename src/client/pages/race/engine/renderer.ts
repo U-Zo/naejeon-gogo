@@ -26,7 +26,8 @@ export class Renderer {
     trackLength: number,
     trackWidth: number,
   ): void {
-    const { width, height } = this.canvasEl;
+    const width = this.width;
+    const height = this.height;
     const ctx = this.ctx;
 
     ctx.clearRect(0, 0, width, height);
