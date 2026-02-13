@@ -225,13 +225,14 @@ export class RaceSimulation {
       }
 
       // Graduated response: the longer stuck, the harder the blast
-      const angle = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+      // 위쪽 + 좌우 랜덤으로 팅김 (-π/2 = 위, ±0.8 = 좌우 흔들림)
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.8;
 
       if (racer.stuckTime > 800) {
         // Severely stuck: teleport slightly + explosive velocity
         Matter.Body.translate(racer.body, {
           x: (Math.random() - 0.5) * 30,
-          y: 15 + Math.random() * 15,
+          y: -(15 + Math.random() * 15),
         });
         Matter.Body.setVelocity(racer.body, {
           x: Math.cos(angle) * 30,
