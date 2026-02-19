@@ -39,14 +39,10 @@ ShineBorder 효과는 연승 횟수에 따라 샤인 개수가 단계적으로 �
 
 #### Scenario: 3연승
 - **WHEN** 멤버의 연승 횟수가 3이다
-- **THEN** ShineBorder가 1개 렌더링되어야 한다
-
-#### Scenario: 4연승
-- **WHEN** 멤버의 연승 횟수가 4이다
 - **THEN** ShineBorder가 2개 렌더링되어야 한다
 
-#### Scenario: 5연승 이상
-- **WHEN** 멤버의 연승 횟수가 5 이상이다
+#### Scenario: 4연승 이상
+- **WHEN** 멤버의 연승 횟수가 4 이상이다
 - **THEN** ShineBorder가 3개 렌더링되어야 한다
 
 ### Requirement: 샤인 등간격 유지
@@ -57,22 +53,18 @@ ShineBorder 효과는 연승 횟수에 따라 샤인 개수가 단계적으로 �
 - **THEN** 각 샤인의 delay는 `D / N * index`로 설정되어 샤인들이 테두리 위에서 균등한 간격으로 분포해야 한다
 
 ### Requirement: 단계별 색상 변화
-연승 횟수가 높을수록 색상이 붉은 gold에서 무지개 다색으로 변화해야 한다.
+연승 횟수가 높을수록 색상이 갈색에서 무지개 다색으로 변화해야 한다.
 
 #### Scenario: 2연승 색상
 - **WHEN** 멤버의 연승 횟수가 2이다
-- **THEN** 샤인 색상은 붉은 gold 단색 계열이어야 한다
+- **THEN** 샤인 색상은 갈색(brown) 단색 계열이어야 한다
 
 #### Scenario: 3연승 색상
 - **WHEN** 멤버의 연승 횟수가 3이다
-- **THEN** 샤인 색상은 붉은 계열 그라데이션이어야 한다
-
-#### Scenario: 4연승 색상
-- **WHEN** 멤버의 연승 횟수가 4이다
 - **THEN** 샤인 색상은 오렌지-레드 그라데이션이어야 한다
 
-#### Scenario: 5연승 이상 색상
-- **WHEN** 멤버의 연승 횟수가 5 이상이다
+#### Scenario: 4연승 이상 색상
+- **WHEN** 멤버의 연승 횟수가 4 이상이다
 - **THEN** 샤인 색상은 무지개 다색 (red/magenta, cyan/green, gold/orange) 그라데이션이어야 한다
 
 ### Requirement: ShineBorder가 카드 인터랙션을 방해하지 않음

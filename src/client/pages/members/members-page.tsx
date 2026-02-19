@@ -13,6 +13,7 @@ import {
 import type { Position } from '#/client/domains/position';
 import { POSITION_LABELS, POSITIONS } from '#/client/domains/position';
 import * as styles from '#/client/pages/members/members-page.css';
+import { CrackOverlay, getCrackBorderColor, getLoseStreakLevel } from '#/client/components/crack-overlay';
 import { ShineBorder } from '#/client/components/shine-border';
 import * as common from '#/client/styles/common.css';
 
@@ -196,7 +197,8 @@ function MemberStats({ members, matches }: { members: Member[]; matches: { id: s
 
 
 function getStreakShines(count: number) {
-  if (count >= 5) {
+  // 4연승+: Rainbow 3색 (기존 5+연승 효과)
+  if (count >= 4) {
     const d = 7;
     return [
       { duration: d, shineColor: ['#d84a10', '#cc30a0'], delay: 0 },
@@ -204,17 +206,16 @@ function getStreakShines(count: number) {
       { duration: d, shineColor: ['#c8a010', '#d84a10'], delay: (d * 2) / 3 },
     ];
   }
-  if (count === 4) {
+  // 3연승: Orange-Red 2색 (기존 4연승 효과)
+  if (count === 3) {
     const d = 8;
     return [
       { duration: d, shineColor: ['#d84a10', '#b83838'], delay: 0 },
       { duration: d, shineColor: ['#c88030', '#d84a10'], delay: d / 2 },
     ];
   }
-  if (count === 3) {
-    return [{ duration: 10, shineColor: ['#b07850', '#a06858'], delay: 0 }];
-  }
-  return [{ duration: 12, shineColor: ['#6a5018', '#5a4828'], delay: 0 }];
+  // 2연승: Brown 1색 (기존 3연승 효과)
+  return [{ duration: 10, shineColor: ['#b07850', '#a06858'], delay: 0 }];
 }
 
 function MemberCard({
@@ -233,14 +234,22 @@ function MemberCard({
     stats.wins + stats.losses > 0
       ? Math.round((stats.wins / (stats.wins + stats.losses)) * 100)
       : 0;
+  const crackLevel =
+    member.streak?.type === 'lose' ? getLoseStreakLevel(member.streak.count) : null;
+  const crackBorderColor = crackLevel ? getCrackBorderColor(crackLevel) : undefined;
 
   return (
-    <div className={styles.memberCard} onClick={onEdit}>
+    <div
+      className={styles.memberCard}
+      onClick={onEdit}
+      style={crackBorderColor ? { borderColor: crackBorderColor } : undefined}
+    >
       {member.streak?.type === 'win' &&
         member.streak.count >= 2 &&
         getStreakShines(member.streak.count).map((shine, i) => (
           <ShineBorder key={i} borderWidth={1} {...shine} />
         ))}
+      {crackLevel && <CrackOverlay level={crackLevel as 1 | 2 | 3} />}
       <div className={styles.memberInfo}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span className={styles.memberName}>{member.name}</span>
